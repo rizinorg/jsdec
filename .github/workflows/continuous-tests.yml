@@ -18,5 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Checkout jsdec-test
+        uses: actions/checkout@v2
+        with:
+            repository: rizinorg/jsdec-test
+            token: ${{ secrets.RIZIN_TOKEN }} # TODO: remove when the repo is public
+            path: jsdec-test
       - name: tests
         run: chmod +x .ci-scripts/ci-tests.sh && .ci-scripts/ci-tests.sh ${GITHUB_REF##*/}
