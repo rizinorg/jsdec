@@ -14,6 +14,7 @@ fi
 cd ..
 CI_WORKDIR=$(pwd)
 echo "Work dir: $CI_WORKDIR"
+find ../ -type d 
 
 cd ../jsdec-test
 chmod +x testall.sh
