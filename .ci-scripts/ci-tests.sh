@@ -17,7 +17,7 @@ echo "Work dir: $CI_WORKDIR"
 
 #rm -rf jstest-test >/dev/null 2>&1 || echo "no need to clean.."
 #git clone --branch "$CI_BRANCH" --depth 1 https://github.com/rizinorg/jstest-test || git clone --depth 1 https://github.com/rizinorg/jstest-test
-cd jstest-test
+cd jsdec-test
 chmod +x testall.sh
 ./testall.sh "$CI_WORKDIR/jsdec" travis
 ERRORED=$?
