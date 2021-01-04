@@ -16,7 +16,7 @@
  */
 
 (function() { // lgtm [js/useless-expression]
-    var r2pipe = require('libdec/r2pipe');
+    var rzpipe = require('libdec/rzpipe');
     var Utils = require('libdec/core/utils');
 
     var _compare = function(a, b) {
@@ -36,7 +36,7 @@
         return x.paddr || x.vaddr || x.offset;
     };
 
-    var r2flag_filter = function(x) {
+    var rzflag_filter = function(x) {
         var ch = x.charAt(0);
         if ((ch >= 'a'.charAt(0) && ch <= 'z'.charAt(0)) || (ch >= 'A'.charAt(0) && ch <= 'Z'.charAt(0)) || (ch >= '0'.charAt(0) && ch <= '9'.charAt(0))) {
             return x;
@@ -64,7 +64,7 @@
         this.search = function(address) {
             if (address) {
                 if (!Global.evars.extra.slow) {
-                    var x = r2pipe.string('Cs. @ 0x' + address.toString(16));
+                    var x = rzpipe.string('Cs. @ 0x' + address.toString(16));
                     if (x) {
                         x = x.substr(1);
                         return x.substr(0, x.length - 1);
@@ -78,15 +78,15 @@
         this.search_by_flag = function(flag) {
             if (flag && flag.startsWith('str.')) {
                 if (!Global.evars.extra.slow) {
-                    var address = r2pipe.string('s @ ' + flag);
-                    var x = r2pipe.string('Cs. @ ' + address.toString(16));
+                    var address = rzpipe.string('s @ ' + flag);
+                    var x = rzpipe.string('Cs. @ ' + address.toString(16));
                     if (x) {
                         x = x.substr(1);
                         return x.substr(0, x.length - 1);
                     }
                 }
                 for (var i = 0; i < this.data.length; i++) {
-                    var r2flag = 'str.' + this.data[i].value.split('').map(r2flag_filter).join('').trim();
+                    var r2flag = 'str.' + this.data[i].value.split('').map(rzflag_filter).join('').trim();
                     r2flag = r2flag.replace(/\\[abnrtv]/g, '_').replace(/\\/g, '_');
                     r2flag = r2flag.replace(/^str._+/, 'str.');
                     r2flag = r2flag.replace(/_+$/, '');

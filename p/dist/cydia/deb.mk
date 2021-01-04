@@ -124,7 +124,7 @@ clobber::
 		${PACKAGE_DIR}/data ${PACKAGE_DIR}/build
 
 push:
-	scp *.deb radare.org:/srv/http/radareorg/cydia/debs
+	scp *.deb radare.org:/srv/http/rizinorg/cydia/debs
 
 mrproper: clean
 	rm -rf root

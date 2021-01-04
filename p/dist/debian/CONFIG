@@ -1,9 +1,9 @@
-PACKAGE=r2dec
+PACKAGE=jsdec
 ifndef VERSION
   VERSION=$(shell r2 -qv)
 endif
 ARCH=amd64
-DEPENDS=radare2
+DEPENDS=rizin
 SECTION=user/shell
 PRIORITY=optional
 MAINTAINER=wargio <wargio@libero.it>

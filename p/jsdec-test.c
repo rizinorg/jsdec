@@ -4,7 +4,7 @@
 #include <duk_missing.h>
 #include <stdio.h>
 
-static const char* r2dec_home = 0;
+static const char* jsdec_home = 0;
 
 char* read_slurp(const char* filename) {
 	FILE * fp;
@@ -40,12 +40,12 @@ char* read_slurp(const char* filename) {
 	return buffer;
 }
 
-static char* r2dec_read_file(const char* file) {
+static char* jsdec_read_file(const char* file) {
 	if (!file) {
 		return 0;
 	}
 	char filepath[1024];
-	snprintf (filepath, sizeof (filepath), "%s/%s", r2dec_home, file);
+	snprintf (filepath, sizeof (filepath), "%s/%s", jsdec_home, file);
 	return read_slurp (filepath);
 }
 
@@ -53,7 +53,7 @@ static duk_ret_t duk_internal_require(duk_context *ctx) {
 	char fullname[256];
 	if (duk_is_string (ctx, 0)) {
 		snprintf (fullname, sizeof(fullname), "%s.js", duk_safe_to_string (ctx, 0));
-		char* text = r2dec_read_file (fullname);
+		char* text = jsdec_read_file (fullname);
 		if (text) {
 			duk_push_lstring (ctx, fullname, strlen (fullname));
 			duk_eval_file (ctx, text);
@@ -92,7 +92,7 @@ static void duk_r2_init(duk_context* ctx) {
 }
 
 static int eval_file(duk_context* ctx, const char* file) {
-	char* text = r2dec_read_file (file);
+	char* text = jsdec_read_file (file);
 	if (text) {
 		duk_push_lstring (ctx, file, strlen (file));
 		duk_eval_file_noresult (ctx, text);
@@ -102,23 +102,23 @@ static int eval_file(duk_context* ctx, const char* file) {
 	return 0;
 }
 
-static void r2dec_fatal_function (void *udata, const char *msg) {
+static void jsdec_fatal_function (void *udata, const char *msg) {
     fprintf (stderr, "*** FATAL ERROR: %s\n", (msg ? msg : "no message"));
     fflush (stderr);
     exit (1);
 }
 
-static void duk_r2dec(const char *input) {
+static void duk_jsdec(const char *input) {
 	char args[1024] = {0};
-	duk_context *ctx = duk_create_heap (0, 0, 0, 0, r2dec_fatal_function);
+	duk_context *ctx = duk_create_heap (0, 0, 0, 0, jsdec_fatal_function);
 	duk_console_init (ctx, 0);
 //	Long_init (ctx);
 	duk_r2_init (ctx);
-	if (eval_file (ctx, "require.js") && eval_file (ctx, "r2dec-test.js")) {		
+	if (eval_file (ctx, "require.js") && eval_file (ctx, "jsdec-test.js")) {		
 		if (*input) {
-			snprintf (args, sizeof(args), "r2dec_main(\"%s\")", input);
+			snprintf (args, sizeof(args), "jsdec_main(\"%s\")", input);
 		} else {
-			snprintf (args, sizeof(args), "r2dec_main()");
+			snprintf (args, sizeof(args), "jsdec_main()");
 		}
 		duk_eval_string_noresult (ctx, args);
 	}
@@ -128,13 +128,13 @@ static void duk_r2dec(const char *input) {
 
 int main(int argc, char const *argv[]) {
 	if (argc != 3) {
-		printf ("usage: %s <home/r2dec-js> <issue.json>\n", argv[0]);
+		printf ("usage: %s <home/jsdec-js> <issue.json>\n", argv[0]);
 		return 1;
 	}
-	r2dec_home = argv[1];
-	// fprintf (stderr, "HOME: %s\n", r2dec_home);
+	jsdec_home = argv[1];
+	// fprintf (stderr, "HOME: %s\n", jsdec_home);
 	// fprintf (stderr, "JSON: %s\n", argv[2]);
-	duk_r2dec (argv[2]);
+	duk_jsdec (argv[2]);
 	return 0;
 }
 

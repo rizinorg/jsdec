@@ -98,7 +98,7 @@
             instruction.code = Base.return(instruction.code);
             if (instruction.cond) {
                 instruction.comments.push('Beware that this jump is a conditional jump.');
-                instruction.comments.push('r2dec transformed it as a return, due being the');
+                instruction.comments.push('jsdec transformed it as a return, due being the');
                 instruction.comments.push('last instruction. Please, check \'pdda\' output');
                 instruction.comments.push('for more hints.');
             }

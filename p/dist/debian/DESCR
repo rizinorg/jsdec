@@ -1,2 +1,2 @@
-Frida plugin for radare2
+Frida plugin for rizin
 This plugin enables r2 to talk with frida-server in local or remote devices running on Windows, Linux, Mac, iOS or Android via the frida:// URI handler.

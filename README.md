@@ -1,60 +1,58 @@
-![Build Status](https://github.com/radareorg/r2dec-js/workflows/continuous-tests/badge.svg)
-[![CodeFactor](https://www.codefactor.io/repository/github/radareorg/r2dec-js/badge)](https://www.codefactor.io/repository/github/radareorg/r2dec-js)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/radareorg/r2dec-js.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/radareorg/r2dec-js/context:javascript)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/radareorg/r2dec-js.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/radareorg/r2dec-js/alerts/)
+![Build Status](https://github.com/rizinorg/jsdec/workflows/continuous-tests/badge.svg)
+[![CodeFactor](https://www.codefactor.io/repository/github/rizinorg/jsdec/badge)](https://www.codefactor.io/repository/github/rizinorg/jsdec)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/rizinorg/jsdec.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/rizinorg/jsdec/context:javascript)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/rizinorg/jsdec.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/rizinorg/jsdec/alerts/)
 
-![r2dec](https://raw.githubusercontent.com/radareorg/r2dec-js/image/r2dec200.png)
+![jsdec](https://raw.githubusercontent.com/rizinorg/jsdec/master/.github/logo.png)
 
 Converts asm to pseudo-C code.
 
 # Software Requirements
 
-Requires radare2 version 3.6.0 or newer.
+Requires [rizin](https://github.com/rizinorg/rizin).
 
 # Install
 
-Follow the following steps to install r2dec via r2pm
+Follow the following steps to install jsdec via rzpm
 
 ### *nix users (Linux/OSX/etc..):
 
-    r2pm init
-    r2pm install r2dec
+    rzpm init
+    rzpm install jsdec
 
 ### Windows users only:
 
  - clone
  - For cygwin or msys2
-    - run `make -C p` from inside the `r2dec` folder
+    - run `make -C p` from inside the `jsdec` folder
  - For everything else
     - Build via meson.
- - Set `R2DEC_HOME` env variable or copy whole r2dec-js dir to `%R2_RDATAHOME%\r2pm\git\` where `%R2_RDATAHOME%` is path returned by `radare2.exe -H R2_RDATAHOME`.
+ - Set `JSDEC_HOME` env variable or copy whole jsdec dir to `%RZ_RDATAHOME%\rzpm\git\` where `%RZ_RDATAHOME%` is path returned by `rizin.exe -H RZ_RDATAHOME`.
 
 # Usage
 
-* Open your file with radare2
+* Open your file with rizin
 * Analyze the function you want to disassemble (`af`)
 * Run the plugin via `pdd`
 
 # Arguments
 
 ```
-[0x00000000]> pdd?Usage: pdd [args] - core plugin for r2dec
+[0x00000000]> pdd?Usage: pdd [args] - core plugin for jsdec
  pdd           - decompile current function
  pdd?          - show this help
- pdd*          - the decompiled code is returned to r2 as comment (via CCu)
+ pdd*          - the decompiled code is returned to rizin as comment (via CCu)
  pdda          - decompile current function side by side with assembly
  pddb          - decompile current function but shows only scopes
  pddo          - decompile current function side by side with offsets
- pddu          - install/upgrade r2dec via r2pm
- pdds <branch> - switches r2dec branch
  pddi          - generates the issue data
 
 Environment
- R2DEC_HOME  defaults to the root directory of the r2dec repo
+ JSDEC_HOME  defaults to the root directory of the jsdec repo
 
 [0x00000000]> pdd --help
 
-r2dec [options]
+jsdec [options]
        --help       | this help message
        --assembly   | shows pseudo next to the assembly
        --blocks     | shows only scopes blocks
@@ -66,30 +64,30 @@ r2dec [options]
        --offsets    | shows pseudo next to the assembly offset
        --paddr      | all xrefs uses physical addresses instead of virtual addresses
        --xrefs      | shows also instruction xrefs in the pseudo code
-       --as-comment | the decompiled code is returned to r2 as comment (via CCu)
-       --as-opcode  | the decompiled code is returned to r2 as opcode (via aho)
+       --as-comment | the decompiled code is returned to rizin as comment (via CCu)
+       --as-opcode  | the decompiled code is returned to rizin as opcode (via aho)
 ```
 
 # Radare2 Evaluable vars
 
-You can use these in your `.radare2rc` file.
+You can use these in your `.rizinrc` file.
 
 ```
-r2dec.asm           | if true, shows pseudo next to the assembly.
-r2dec.blocks        | if true, shows only scopes blocks.
-r2dec.casts         | if false, hides all casts in the pseudo code.
-r2dec.debug         | do not catch exceptions in r2dec.
-r2dec.paddr         | if true, all xrefs uses physical addresses compare.
-r2dec.slow          | if true load all the data before to avoid multirequests to r2.
-r2dec.theme         | defines the color theme to be used on r2dec.
-r2dec.xrefs         | if true, shows all xrefs in the pseudo code.
+jsdec.asm           | if true, shows pseudo next to the assembly.
+jsdec.blocks        | if true, shows only scopes blocks.
+jsdec.casts         | if false, hides all casts in the pseudo code.
+jsdec.debug         | do not catch exceptions in jsdec.
+jsdec.paddr         | if true, all xrefs uses physical addresses compare.
+jsdec.slow          | if true load all the data before to avoid multirequests to rizin.
+jsdec.theme         | defines the color theme to be used on jsdec.
+jsdec.xrefs         | if true, shows all xrefs in the pseudo code.
 e scr.html          | outputs html data instead of text.
 e scr.color         | enables syntax colors.
 ```
 
 # Report an Issue
 
-* Open your file with radare2
+* Open your file with rizin
 * Analyze the function you want to disassemble (`af`)
 * Give the data to the plugin via `pddi` or `pdd --issue`
 * Insert the JSON returned by the previous command into the issue (you can also upload the output)
@@ -109,9 +107,9 @@ e scr.color         | enables syntax colors.
     wasm (experimental)
     x86/x64
 
-# Developing on r2dec
+# Developing on jsdec
 
-[Read DEVELOPERS.md](https://github.com/radareorg/r2dec-js/blob/master/DEVELOPERS.md)
+[Read DEVELOPERS.md](https://github.com/rizinorg/jsdec/blob/master/DEVELOPERS.md)
 
 ## Example
 
@@ -134,7 +132,7 @@ int main(int argc, char const *argv[]) {
 }
 ```
 
-### radare2 view
+### rizin view
 
 
 ```
@@ -164,10 +162,10 @@ int main(int argc, char const *argv[]) {
 ╰           0x0000114a      c3             ret
 ```
 
-### r2dec pseudo-C code
+### jsdec pseudo-C code
 
 ```c
-/* r2dec pseudo C output */
+/* jsdec pseudo C output */
 #include <stdint.h>
  
 int32_t main (int32_t argc, char ** argv) {

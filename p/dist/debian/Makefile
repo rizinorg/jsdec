@@ -4,7 +4,7 @@ DEPENDS=
 CROSSARCH=x64
 PWD=$(shell pwd)
 PACKAGE_DIR?=${PWD}
-R2_PLUGIN_DIR=$(shell radare2 -H R2_LIBR_PLUGINS)
+R2_PLUGIN_DIR=$(shell rizin -H R2_LIBR_PLUGINS)
 
 
 all: root
@@ -16,10 +16,10 @@ all: root
 	${MAKE} deb
 
 root:
-	export CFLAGS=-DR2DEC_HOME=\"\\\"$(R2_PLUGIN_DIR)/r2dec-js\\\"\" && make -C ../..
-	mkdir -p root/$(R2_PLUGIN_DIR)/r2dec-js
+	export CFLAGS=-DR2DEC_HOME=\"\\\"$(R2_PLUGIN_DIR)/jsdec-js\\\"\" && make -C ../..
+	mkdir -p root/$(R2_PLUGIN_DIR)/jsdec-js
 	cp -vf ../../core_pdd.so root/$(R2_PLUGIN_DIR)
-	cp -vfr ../../../libdec root/$(R2_PLUGIN_DIR)/r2dec-js
+	cp -vfr ../../../libdec root/$(R2_PLUGIN_DIR)/jsdec-js
 
 purge: clean
 	rm -rf root

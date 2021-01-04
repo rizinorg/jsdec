@@ -117,11 +117,11 @@
         }
         if (Global.evars.extra.ascomment) {
             session.ascomment();
-            Global.context.printLog('[r2dec] comments applied for "' + session.routine_name + '".');
+            Global.context.printLog('[jsdec] comments applied for "' + session.routine_name + '".');
             return;
         } else if (Global.evars.extra.ascodeline) {
             session.ascodeline();
-            Global.context.printLog('[r2dec] new code lines applied for "' + session.routine_name + '".');
+            Global.context.printLog('[jsdec] new code lines applied for "' + session.routine_name + '".');
             return;
         }
         if (!Global.evars.extra.allfunctions) {
@@ -130,10 +130,10 @@
             var details = '/* ' + Global.evars.extra.file + ' @ 0x' + Global.evars.extra.offset.toString(16) + ' */';
             
             if (Global.evars.extra.annotation) {
-                Global.context.addAnnotation(Anno.comment('/* r2dec pseudo code output */\n'));
+                Global.context.addAnnotation(Anno.comment('/* jsdec pseudo code output */\n'));
                 Global.context.addAnnotation(Anno.comment(details + '\n'));
             } else {
-                Global.context.printLine(Global.context.identfy(asm_header.length, t.comment(asm_header)) + t.comment('/* r2dec pseudo code output */'));
+                Global.context.printLine(Global.context.identfy(asm_header.length, t.comment(asm_header)) + t.comment('/* jsdec pseudo code output */'));
                 Global.context.printLine(Global.context.identfy() + t.comment(details));
             }
             if (['java', 'dalvik'].indexOf(Global.evars.arch) < 0) {

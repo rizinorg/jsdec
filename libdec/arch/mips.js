@@ -70,9 +70,9 @@
     };
 
     var _value_at = function(address, bits) {
-        if ((bits == 32 || bits == 64) && r2cmd) {
+        if ((bits == 32 || bits == 64) && rzcmd) {
             //this is truly an hack
-            var p = JSON.parse(r2cmd('?j [0x' + address.toString(16) + ']').trim());
+            var p = JSON.parse(rzcmd('?j [0x' + address.toString(16) + ']').trim());
             return Long.fromString(p['int' + bits], true, 10);
         }
         return address;

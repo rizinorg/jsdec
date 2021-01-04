@@ -12,7 +12,7 @@ all: root
 
 root:
 	cd .. ; $(MAKE) ios && $(MAKE) install \
-		R2_PLUGDIR=/private/var/radare2/lib/radare2/last \
+		R2_PLUGDIR=/private/var/rizin/lib/rizin/last \
 		DESTDIR=$(shell pwd)/root
 
 include deb.mk

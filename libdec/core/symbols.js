@@ -17,7 +17,7 @@
 
 (function() { // lgtm [js/useless-expression]
     const Long = require('libdec/long');
-    const r2pipe = require('libdec/r2pipe');
+    const rzpipe = require('libdec/rzpipe');
     const Utils = require('libdec/core/utils');
 
     var _compare = function(a, b) {
@@ -57,7 +57,7 @@
                     var def = {
                         symbols: {}
                     };
-                    var x = r2pipe.json64('is.j @ 0x' + address.toString(16), def).symbols;
+                    var x = rzpipe.json64('is.j @ 0x' + address.toString(16), def).symbols;
                     var loc = (Global.evars.honor.paddr ? x.paddr : x.vaddr) || Long.MAX_UNSIGNED_VALUE;
                     return address.eq(loc) && !Long.MAX_UNSIGNED_VALUE.eq(loc) ? ((x.demname && x.demname.length > 0) ? x.demname : x.name) : null;
                 }

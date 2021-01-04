@@ -41,11 +41,11 @@ var Global = {
  * Imports.
  */
 var libdec = require('libdec/libdec');
-var r2util = require('libdec/r2util');
-var r2pipe = require('libdec/r2pipe');
+var rzutil = require('libdec/rzutil');
+var rzpipe = require('libdec/rzpipe');
 
 function decompile_offset(architecture, fcnname) {
-    var data = new r2util.data();
+    var data = new rzutil.data();
     Global.argdb = data.argdb;
     // af seems to break renaming.
     /* asm.pseudo breaks things.. */
@@ -64,19 +64,19 @@ function decompile_offset(architecture, fcnname) {
 }
 
 /**
- * r2dec main function.
- * @param  {Array} args - r2dec arguments to be used to configure the output.
+ * jsdec main function.
+ * @param  {Array} args - jsdec arguments to be used to configure the output.
  */
-function r2dec_main(args) { // lgtm [js/unused-local-variable] 
+function jsdec_main(args) { // lgtm [js/unused-local-variable] 
     var Printer = require('libdec/printer');
     var lines = null;
     var errors = [];
     var log = [];
     try {
-        Global.evars = new r2util.evars(args);
-        r2util.sanitize(true, Global.evars);
-        if (r2util.check_args(args)) {
-            r2util.sanitize(false, Global.evars);
+        Global.evars = new rzutil.evars(args);
+        rzutil.sanitize(true, Global.evars);
+        if (rzutil.check_args(args)) {
+            rzutil.sanitize(false, Global.evars);
             return;
         }
 
@@ -88,23 +88,23 @@ function r2dec_main(args) { // lgtm [js/unused-local-variable]
         if (architecture) {
             Global.context = new libdec.context();
             if (Global.evars.extra.allfunctions) {
-                var current = r2pipe.string('s');
-                var functions = r2pipe.json64('aflj');
+                var current = rzpipe.string('s');
+                var functions = rzpipe.json64('aflj');
                 functions.forEach(function(x) {
                     if (x.name.startsWith('sym.imp.') || x.name.startsWith('loc.imp.')) {
                         return;
                     }
-                    r2pipe.string('s 0x' + x.offset.toString(16));
+                    rzpipe.string('s 0x' + x.offset.toString(16));
                     Global.context.printLine("");
                     Global.context.printLine(Global.printer.theme.comment('/* name: ' + x.name + ' @ 0x' + x.offset.toString(16) + ' */'));
                     decompile_offset(architecture, x.name);
                 });
-                r2pipe.string('s ' + current);
+                rzpipe.string('s ' + current);
                 var o = Global.context;
                 Global.context = new libdec.context();
                 Global.context.macros = o.macros;
                 Global.context.dependencies = o.dependencies;
-                Global.context.printLine(Global.printer.theme.comment('/* r2dec pseudo code output */'));
+                Global.context.printLine(Global.printer.theme.comment('/* jsdec pseudo code output */'));
                 Global.context.printLine(Global.printer.theme.comment('/* ' + Global.evars.extra.file + ' */'));
                 if (['java', 'dalvik'].indexOf(Global.evars.arch) < 0) {
                     Global.context.printMacros(true);
@@ -120,12 +120,12 @@ function r2dec_main(args) { // lgtm [js/unused-local-variable]
             lines = Global.context.lines;
         } else {
             errors.push(Global.evars.arch + ' is not currently supported.\n' +
-                'Please open an enhancement issue at https://github.com/radareorg/r2dec-js/issues\n' +
+                'Please open an enhancement issue at https://github.com/radareorg/jsdec-js/issues\n' +
                 libdec.supported());
         }
-        r2util.sanitize(false, Global.evars);
+        rzutil.sanitize(false, Global.evars);
     } catch (e) {
-        errors.push(r2util.debug(Global.evars, e));
+        errors.push(rzutil.debug(Global.evars, e));
     }
 
     var printer = Global.printer;

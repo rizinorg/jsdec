@@ -1,11 +1,11 @@
 CFLAGS+=-g -O3 -std=c99 -Wall -fPIC -I./duktape
-CFLAGS_PKG=$(shell pkg-config --cflags r_util r_io r_cons r_core)
+CFLAGS_PKG=$(shell pkg-config --cflags rz_util rz_io rz_cons rz_core)
 
 LDFLAGS+=-lm
-LDFLAGS_PKG=$(shell pkg-config --libs r_util r_io r_cons r_core)
+LDFLAGS_PKG=$(shell pkg-config --libs rz_util rz_io rz_cons rz_core)
 
-LIBEXT=$(shell r2 -H LIBEXT)
-PLUGDIR=$(shell r2 -H R2_USER_PLUGINS)
+LIBEXT=$(shell rizin -H LIBEXT)
+PLUGDIR=$(shell rizin -H RZ_USER_PLUGINS)
 
 V=@
 ECHO=echo
@@ -33,6 +33,7 @@ $(PLUGDIR):
 	$(V)$(MKDIR) $@
 
 install: uninstall $(PLUGDIR) $(BIN)
+	$(V)$(ECHO) "[INSTALL]" $(PLUGDIR)/$(BIN)
 	$(V)$(RM) $(PLUGDIR)/$(BIN)
 	$(V)$(CP) $(BIN) $(PLUGDIR)
 
@@ -43,4 +44,4 @@ clean:
 	$(V)$(RM) $(BIN) $(OBJS) || sleep 0
 
 testbin:
-	$(V)$(CC) $(CFLAGS) -DUSE_RCONS=0 -o r2dec-test duktape/duktape.c duktape/duk_console.c r2dec-test.c $(LDFLAGS)
+	$(V)$(CC) $(CFLAGS) -DUSE_RZCONS=0 -o jsdec-test duktape/duktape.c duktape/duk_console.c jsdec-test.c $(LDFLAGS)

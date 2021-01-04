@@ -1,11 +1,11 @@
 ---
-name: r2dec crash template
+name: jsdec crash template
 about: Before opening the issue verify it crashes also on the latest version
 
 ---
 
 **Describe the bug**
-Before opening a bug report run `r2pm install r2dec` and verify it crashes also on the latest version.
+Before opening a bug report run `rzpm install jsdec` and verify it crashes also on the latest version.
 A clear and concise description of what the bug is (if known).
 
 **Component**

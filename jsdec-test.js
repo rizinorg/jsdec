@@ -38,22 +38,22 @@ var Global = {
  * Imports.
  */
 var libdec = require('libdec/libdec');
-var r2util = require('libdec/r2util');
+var rzutil = require('libdec/rzutil');
 
-const r2cmd = null;
+const rzcmd = null;
 
 /**
- * r2dec main function.
+ * jsdec main function.
  * @param  {String} filename - Issue filename to analyze (relative/fullpath)
  */
-function r2dec_main(filename) { // lgtm [js/unused-local-variable]
+function jsdec_main(filename) { // lgtm [js/unused-local-variable]
     try {
         // imports
         var Printer = require('libdec/printer');
-        if (filename && !r2cmd) {
+        if (filename && !rzcmd) {
             var jsonstr = read_file(filename).trim();
-            var data = r2util.dataTestSuite(jsonstr);
-            Global.evars = new r2util.evarsTestSuite(data);
+            var data = rzutil.dataTestSuite(jsonstr);
+            Global.evars = new rzutil.evarsTestSuite(data);
             Global.argdb = data.argdb;
             Global.printer = new Printer();
 

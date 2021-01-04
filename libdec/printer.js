@@ -26,7 +26,7 @@
 
     function initializeColors() {
         const config = {};
-        const colors = r2cmd ? r2cmd("ec*") : '';
+        const colors = rzcmd ? rzcmd("ec*") : '';
         colors.split('\n').forEach(function(line) {
             const tok = line.split(' ');
             config[tok[1]] = tok[2];
@@ -169,7 +169,7 @@
     };
 
     /**
-     * Prints the final r2dec output
+     * Prints the final jsdec output
      * @param useJSON - boolean whether to print as json
      */
     var _flush_output = function(lines, errors, log, evars) {

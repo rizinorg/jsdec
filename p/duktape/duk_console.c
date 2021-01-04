@@ -6,11 +6,11 @@
  *  https://developer.mozilla.org/en/docs/Web/API/console
  */
 
-#ifndef USE_RCONS
-#define USE_RCONS 1
+#ifndef USE_RZCONS
+#define USE_RZCONS 1
 #endif
-#if USE_RCONS
-#include <r_cons.h>
+#if USE_RZCONS
+#include <rz_cons.h>
 #endif
 
 #include <stdio.h>
@@ -18,7 +18,7 @@
 #include "duktape.h"
 #include "duk_console.h"
 
-#include "../r2dec_ctx.h"
+#include "../jsdec_ctx.h"
 
 /* XXX: Add some form of log level filtering. */
 
@@ -60,12 +60,12 @@ static duk_ret_t duk__console_log_helper(duk_context *ctx, const char *error_nam
 		duk_get_prop_string(ctx, -1, "stack");
 	}
 
-#if USE_RCONS
-	R2DecCtx *r2dec_ctx = r2dec_ctx_get (ctx);
-	r_cons_sleep_end (r2dec_ctx->bed);
-	r_cons_strcat (duk_to_string (ctx, -1));
-	r_cons_newline ();
-	r2dec_ctx->bed = r_cons_sleep_begin ();
+#if USE_RZCONS
+	JsDecCtx *jsctx = jsdec_ctx_get (ctx);
+	rz_cons_sleep_end (jsctx->bed);
+	rz_cons_strcat (duk_to_string (ctx, -1));
+	rz_cons_newline ();
+	jsctx->bed = rz_cons_sleep_begin ();
 #else
 	duk_uint_t flags = (duk_uint_t) duk_get_current_magic(ctx);
 	FILE *output = (flags & DUK_CONSOLE_STDOUT_ONLY) ? stdout : stderr;

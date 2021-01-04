@@ -41,7 +41,7 @@ jobs:
   #      shell: pwsh
   #      run: |
   #        .github\vsdevenv.ps1
-  #        meson --buildtype=release --prefix=$PWD\radare2-install build ${{ matrix.meson_options }}
+  #        meson --buildtype=release --prefix=$PWD\rizin-install build ${{ matrix.meson_options }}
   #        ninja -C build
 
   build-deb:
@@ -59,42 +59,42 @@ jobs:
             container: ubuntu:18.04
     steps:
       - uses: actions/checkout@v2
-      - name: extract r2 version
+      - name: extract rizin version
         shell: bash
         run: echo "##[set-output name=version;]$(echo ${GITHUB_REF##*/} | sed 's/release-//')"
-        id: radare2
+        id: rizin
       - name: install requirements
         run: |
           apt-get update -qq > /dev/null
           apt-get install --yes sudo wget pkg-config build-essential libuv1-dev libssl-dev libc6 -qq > /dev/null
-      - name: install radare2 and radare2-dev
+      - name: install rizin and rizin-dev
         run: |
-          export VERSION=${{ steps.radare2.outputs.version }}
+          export VERSION=${{ steps.rizin.outputs.version }}
           export DISTRIB=${{ matrix.name }}
-          export GH_URL="https://github.com/radareorg/radare2/releases/download/$VERSION"
-          wget --quiet -c "$GH_URL/radare2-""$DISTRIB""_""$VERSION""_amd64.deb"
-          wget --quiet -c "$GH_URL/radare2-dev-""$DISTRIB""_""$VERSION""_amd64.deb"
+          export GH_URL="https://github.com/rizinorg/rizin/releases/download/$VERSION"
+          wget --quiet -c "$GH_URL/rizin-""$DISTRIB""_""$VERSION""_amd64.deb"
+          wget --quiet -c "$GH_URL/rizin-dev-""$DISTRIB""_""$VERSION""_amd64.deb"
           sudo dpkg -i *.deb
           rm -rf *.deb || sleep 0
       - name: build 
         run: |
           make -C p/dist/debian
-          mv p/dist/debian/*.deb p/dist/debian/r2dec-${{ matrix.name }}_${{ steps.radare2.outputs.version }}_amd64.deb
+          mv p/dist/debian/*.deb p/dist/debian/jsdec-${{ matrix.name }}_${{ steps.rizin.outputs.version }}_amd64.deb
       - name: upload .deb file
         uses: actions/upload-artifact@v2
         with:
-          name: r2dec-${{ matrix.name }}-${{ steps.radare2.outputs.version }}-deb
-          path: p/dist/debian/r2dec-${{ matrix.name }}_${{ steps.radare2.outputs.version }}_amd64.deb
+          name: jsdec-${{ matrix.name }}-${{ steps.rizin.outputs.version }}-deb
+          path: p/dist/debian/jsdec-${{ matrix.name }}_${{ steps.rizin.outputs.version }}_amd64.deb
 
   create-release:
     runs-on: ubuntu-latest
     needs: [build-deb]
     steps:
       - uses: actions/checkout@v2
-      - name: extract r2 version
+      - name: extract rizin version
         shell: bash
         run: echo "##[set-output name=version;]$(echo ${GITHUB_REF##*/} | sed 's/release-//')"
-        id: radare2
+        id: rizin
 
       - uses: actions/download-artifact@v2
       - name: display structure of downloaded files
@@ -106,8 +106,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.radare2.outputs.version }}
-          release_name: Release ${{ steps.radare2.outputs.version }}
+          tag_name: ${{ steps.rizin.outputs.version }}
+          release_name: Release ${{ steps.rizin.outputs.version }}
           draft: false
           prerelease: false
 
@@ -117,8 +117,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./r2dec-debian-buster-${{ steps.radare2.outputs.version }}-deb/r2dec-debian-buster_${{ steps.radare2.outputs.version }}_amd64.deb
-          asset_name: r2dec-debian-buster_${{ steps.radare2.outputs.version }}_amd64.deb
+          asset_path: ./jsdec-debian-buster-${{ steps.rizin.outputs.version }}-deb/jsdec-debian-buster_${{ steps.rizin.outputs.version }}_amd64.deb
+          asset_name: jsdec-debian-buster_${{ steps.rizin.outputs.version }}_amd64.deb
           asset_content_type: application/zip
 
       - name: upload ubuntu:18.04 package
@@ -127,6 +127,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./r2dec-ubuntu-1804-${{ steps.radare2.outputs.version }}-deb/r2dec-ubuntu-1804_${{ steps.radare2.outputs.version }}_amd64.deb
-          asset_name: r2dec-ubuntu-1804_${{ steps.radare2.outputs.version }}_amd64.deb
+          asset_path: ./jsdec-ubuntu-1804-${{ steps.rizin.outputs.version }}-deb/jsdec-ubuntu-1804_${{ steps.rizin.outputs.version }}_amd64.deb
+          asset_name: jsdec-ubuntu-1804_${{ steps.rizin.outputs.version }}_amd64.deb
           asset_content_type: application/zip

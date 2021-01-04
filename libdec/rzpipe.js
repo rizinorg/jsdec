@@ -19,40 +19,40 @@
     var JSON64 = require('libdec/json64');
     var Long = require('libdec/long');
 
-    function r2custom(value, regex, function_fix) {
-        var x = r2cmd(value);
+    function rzcustom(value, regex, function_fix) {
+        var x = rzcmd(value);
         if (regex) {
             x = x.replace(regex, '');
         }
         return function_fix ? function_fix(x.trim()) : x.trim();
     }
 
-    function r2str(value, multiline) {
-        var x = r2cmd(value);
+    function rzstr(value, multiline) {
+        var x = rzcmd(value);
         if (multiline) {
             x = x.replace(/\n/g, '');
         }
         return x.trim();
     }
 
-    function r2json(m, def) {
-        var x = r2str(m, true);
+    function rzjson(m, def) {
+        var x = rzstr(m, true);
         try {
             return x.length > 0 ? JSON.parse(x) : def;
         } catch(e){}
         return def;
     }
 
-    function r2json64(m, def) {
-        var x = r2str(m, true);
+    function rzjson64(m, def) {
+        var x = rzstr(m, true);
         try {
             return x.length > 0 ? JSON64.parse(x) : def;
         } catch(e){}
         return def;
     }
 
-    function r2int(value, def) {
-        var x = r2str(value);
+    function rzint(value, def) {
+        var x = rzstr(value);
         if (x != '') {
             try {
                 return parseInt(x);
@@ -61,8 +61,8 @@
         return def || 0;
     }
 
-    function r2long(value, def) {
-        var x = r2str(value);
+    function rzlong(value, def) {
+        var x = rzstr(value);
         if (x != '') {
             try {
                 return Long.fromString(x, true, x.startsWith('0x') ? 16 : 10);
@@ -71,18 +71,18 @@
         return def || Long.UZERO;
     }
 
-    function r2bool(value) {
-        var x = r2str(value);
+    function rzbool(value) {
+        var x = rzstr(value);
         return x == 'true' || x == '1';
     }
 
     return {
-        custom: r2custom,
-        string: r2str,
-        json64: r2json64,
-        json: r2json,
-        int: r2int,
-        long: r2long,
-        bool: r2bool,
+        custom: rzcustom,
+        string: rzstr,
+        json64: rzjson64,
+        json: rzjson,
+        int: rzint,
+        long: rzlong,
+        bool: rzbool,
     };
 });

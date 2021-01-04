@@ -1,7 +1,9 @@
 /nbproject/
 /node_modules/
+p/build
+p/clean
 p/core_pdd.so
-p/r2dec-test
+p/jsdec-test
 /themes/*.json
 core_pdd.so
 p/*.o

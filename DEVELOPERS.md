@@ -1,10 +1,10 @@
-# Developing on r2dec
+# Developing on jsdec
 
-r2dec is mostly written in javascript and the engine is duktape.
+jsdec is mostly written in javascript and the engine is duktape.
 
 Duktape APIs: https://duktape.org/api.html
 
-## Extending r2dec arch
+## Extending jsdec arch
 
 First of all when you need to add a new architecture, you need to create a new `.js` file inside `libdec/arch/`.
 

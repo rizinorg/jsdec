@@ -1,31 +1,31 @@
-project('r2dec', 'c', meson_version: '>=0.46.0')
+project('jsdec', 'c', meson_version: '>=0.46.0')
 
-r2 = find_program('radare2', required: false)
+rizin = find_program('rizin', required: false)
 cc = meson.get_compiler('c')
 
 incs = []
 deps = []
 
-r2_incdir = get_option('r2_incdir')
-if r2_incdir == '' and r2.found()
-  r2_incdir = run_command(r2, '-H', 'INCDIR').stdout().strip()
+rizin_incdir = get_option('rizin_incdir')
+if rizin_incdir == '' and rizin.found()
+  rizin_incdir = run_command(rizin, '-H', 'INCDIR').stdout().strip()
 endif
 
-r2_libdir = get_option('r2_libdir')
-if r2_libdir == '' and r2.found()
-  r2_libdir = run_command(r2, '-H', 'LIBDIR').stdout().strip()
+rizin_libdir = get_option('rizin_libdir')
+if rizin_libdir == '' and rizin.found()
+  rizin_libdir = run_command(rizin, '-H', 'LIBDIR').stdout().strip()
 endif
 
-libs = ['r_core', 'r_util', 'r_cons', 'r_config', 'r_io']
+libs = ['rz_core', 'rz_util', 'rz_cons', 'rz_config', 'rz_io']
 foreach lib : libs
-  deps += cc.find_library(lib, dirs: r2_libdir)
+  deps += cc.find_library(lib, dirs: rizin_libdir)
 endforeach
 
 deps += cc.find_library('m', required: false)
 
-if r2_incdir != ''
-  incs += r2_incdir
-  incs += r2_incdir + '/sdb'
+if rizin_incdir != ''
+  incs += rizin_incdir
+  incs += rizin_incdir + '/sdb'
 endif
 
 incs += 'duktape'
@@ -44,8 +44,8 @@ shared_library('core_pdd', files,
   install_dir: get_option('libdir')
 )
 
-dst = join_paths(get_option('datadir'), 'r2dec-js')
+dst = join_paths(get_option('datadir'), 'jsdec')
 install_subdir(join_paths('..', 'libdec'), install_dir: dst)
 install_subdir(join_paths('..', 'themes'), install_dir: dst)
-install_data(join_paths('..', 'r2dec-duk.js'), install_dir: dst)
+install_data(join_paths('..', 'jsdec-duk.js'), install_dir: dst)
 install_data(join_paths('..', 'require.js'), install_dir: dst)

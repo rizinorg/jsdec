@@ -17,7 +17,7 @@
             "allowEmptyCatch": true
         }],
         "no-unused-vars": ["error", {
-            "varsIgnorePattern": "r2dec_|\\binclude\\b",
+            "varsIgnorePattern": "jsdec_|\\binclude\\b",
             "args": "none"
         }],
         "curly": "error",
@@ -37,7 +37,7 @@
         "read_file": true,
         "module": true,
         "console": true,
-        "r2cmd": true,
+        "rzcmd": true,
         "___internal_load": true,
         "___internal_require": true
     }

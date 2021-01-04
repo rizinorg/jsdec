@@ -75,11 +75,11 @@
     };
 
     var _value_at = function(address) {
-        if (r2cmd && address) {
+        if (rzcmd && address) {
             try {
                 //this is truly an hack
                 var bytes = Global.evars.archbits > 32 ? 8 : 4;
-                var p = JSON.parse(r2cmd('pxj ' + bytes + ' @ 0x' + address.toString(16)).trim()).reverse().map(function(x) {
+                var p = JSON.parse(rzcmd('pxj ' + bytes + ' @ 0x' + address.toString(16)).trim()).reverse().map(function(x) {
                     x = x.toString(16);
                     return x.length > 1 ? x : '0' + x;
                 }).join('');
@@ -597,10 +597,10 @@
 
                 // opd1.token may be set to a variable name, and therefore mask the stack pointer dereference. for that
                 // reason we also check whether it appears as a stack variable, to extract its offset from stack pointer.
-                // [another option would be undefining that variable manually using the "afvs-" r2 command]
+                // [another option would be undefining that variable manually using the "afvs-" rizin command]
 
                 // check whether this is a plain stack pointer dereference, or a stack pointer dereference masekd by a
-                // variable name. if the former, extract the offset manually; if the latter, use r2 data to retreive
+                // variable name. if the former, extract the offset manually; if the latter, use rizin data to retreive
                 // that value.
 
                 idx = varsname.indexOf(opd1.token);

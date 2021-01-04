@@ -165,7 +165,7 @@
         this.identAsm = '';
 
         /**
-         * Sets the max size of the identation line for the `--assembly/r2dec.asm` option.
+         * Sets the max size of the identation line for the `--assembly/jsdec.asm` option.
          * @param  {Number} size - Size to set
          */
         this.identAsmSet = function(size) {

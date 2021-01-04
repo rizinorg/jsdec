@@ -17,7 +17,7 @@
 
 (function() { // lgtm [js/useless-expression]
     /**
-     * On r2 this can be done via afcfj <function name>
+     * On rizin this can be done via afcfj <function name>
      * [
      *    {
      *      "name": "localtime",

@@ -3,15 +3,15 @@
 (
 	RV=${VERSION}
 	RA=amd64
-	echo "[*] Downloading r2-${RV}-${RA}"
-	wget -c https://github.com/radareorg/radare2/releases/download/${RV}/radare2_${RV}_${RA}.deb
-	wget -c https://github.com/radareorg/radare2/releases/download/${RV}/radare2-dev_${RV}_${RA}.deb
+	echo "[*] Downloading r2rizin-${RV}-${RA}"
+	wget -c https://github.com/rizinorg/rizin/releases/download/${RV}/rizin_${RV}_${RA}.deb
+	wget -c https://github.com/rizinorg/rizin/releases/download/${RV}/rizin-dev_${RV}_${RA}.deb
 	#sudo apt update -y
 	#sudo apt upgrade -y
 	sudo apt install -y libssl-dev # why
-	echo "[*] Installing r2-${RV}-${RA}"
-	sudo dpkg -i radare2_${RV}_${RA}.deb
-	sudo dpkg -i radare2-dev_${RV}_${RA}.deb
+	echo "[*] Installing rizin-${RV}-${RA}"
+	sudo dpkg -i rizin_${RV}_${RA}.deb
+	sudo dpkg -i rizin-dev_${RV}_${RA}.deb
 )
 
 # install NodeJS LTS
@@ -30,5 +30,5 @@
 )
 export PATH=/tmp/node-${NV}-${NA}/bin:$PATH
 [ -z "${DESTDIR}" ] && DESTDIR=/
-[ -z "${R2_LIBR_PLUGINS}" ] && R2_LIBR_PLUGINS=/usr/lib/radare2/last
+[ -z "${R2_LIBR_PLUGINS}" ] && R2_LIBR_PLUGINS=/usr/lib/rizin/last
 make R2_PLUGDIR=${R2_LIBR_PLUGINS} DESTDIR=${DESTDIR}
