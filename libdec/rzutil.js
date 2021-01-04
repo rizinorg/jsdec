@@ -314,7 +314,7 @@
                 return 'Exception: ' + exception.stack;
             } else {
                 return '\n\njsdec has crashed (info: ' + rzpipe.string('i~^file[1:0]') + ' @ ' + rzpipe.string('s') + ').\n' +
-                    'Please report the bug at https://github.com/radareorg/jsdec-js/issues\n' +
+                    'Please report the bug at https://github.com/rizinorg/jsdec/issues\n' +
                     'Use the option \'--issue\' or the command \'pddi\' to generate \n' +
                     'the needed data for the issue.';
             }

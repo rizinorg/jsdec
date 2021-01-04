@@ -120,7 +120,7 @@ function jsdec_main(args) { // lgtm [js/unused-local-variable]
             lines = Global.context.lines;
         } else {
             errors.push(Global.evars.arch + ' is not currently supported.\n' +
-                'Please open an enhancement issue at https://github.com/radareorg/jsdec-js/issues\n' +
+                'Please open an enhancement issue at https://github.com/rizinorg/jsdec/issues\n' +
                 libdec.supported());
         }
         rzutil.sanitize(false, Global.evars);
