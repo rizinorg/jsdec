@@ -27,9 +27,9 @@
 
     function jsdec_sanitize(enable, evar, oldstatus, newstatus) {
         if (enable) {
-            rzcmd('e ' + evar + ' = ' + newstatus);
+            rzcmd('e ' + evar + '=' + newstatus);
         } else {
-            rzcmd('e ' + evar + ' = ' + oldstatus);
+            rzcmd('e ' + evar + '=' + oldstatus);
         }
     }
 

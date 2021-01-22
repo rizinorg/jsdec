@@ -45,3 +45,5 @@ clean:
 
 testbin:
 	$(V)$(CC) $(CFLAGS) -DUSE_RZCONS=0 -o jsdec-test duktape/duktape.c duktape/duk_console.c jsdec-test.c $(LDFLAGS)
+
+.PHONY: clean all install uninstall testbin build
