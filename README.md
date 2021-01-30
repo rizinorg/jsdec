@@ -68,7 +68,7 @@ jsdec [options]
        --as-opcode  | the decompiled code is returned to rizin as opcode (via aho)
 ```
 
-# Radare2 Evaluable vars
+# Evaluable vars
 
 You can use these in your `.rizinrc` file.
 
