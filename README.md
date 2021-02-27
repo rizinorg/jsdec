@@ -17,8 +17,8 @@ Follow the following steps to install jsdec via rzpm
 
 ### *nix users (Linux/OSX/etc..):
 
-    rzpm init
-    rzpm install jsdec
+    rz-pm init
+    rz-pm install jsdec
 
 ### Windows users only:
 
