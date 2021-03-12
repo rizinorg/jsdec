@@ -26,6 +26,29 @@
 #define RZ_HOME_DATADIR RZ_HOMEDIR
 #endif
 
+#define name_args(name) (internal_ ## name ## _args)
+#define name_help(name) (internal_ ## name ## _help)
+#define name_handler(name) (internal_ ## name ## _handler)
+#define command_handler(name, command) \
+	RZ_IPI RzCmdStatus name_handler(name)(RzCore *core, int argc, const char **argv) { \
+		if (argc != 1) { \
+			return RZ_CMD_STATUS_WRONG_ARGS; \
+		} \
+		duk_jsdec (core, command); \
+		return RZ_CMD_STATUS_OK; \
+	}
+#define static_description_no_args(command,description) \
+	static const RzCmdDescArg name_args(command)[] = { \
+		{ 0 }, \
+	}; \
+	static const RzCmdDescHelp name_help(command) = { \
+		.summary = description, \
+		.args = name_args(command), \
+	}
+#define rz_cmd_desc_argv_new_warn(rcmd,root,cmd) \
+	rz_warn_if_fail(rz_cmd_desc_argv_new(rcmd,root,#cmd,name_handler(cmd),&name_help(cmd)))
+
+
 static char* jsdec_read_file(const char* file) {
 	if (!file) {
 		return 0;
@@ -174,101 +197,41 @@ static void duk_jsdec(RzCore *core, const char *input) {
 	rz_cons_sleep_end(jsdec_ctx.bed);
 }
 
-static void usage(const RzCore* const core) {
-	const char* help[] = {
-		"Usage: pdd[*abousi]", "",	"# Core plugin for jsdec",
-		"pdd",	"",        "decompile current function",
-		"pdd*",	"",        "decompiled code is returned to rizin as comment (via CCu)",
-		"pddc",	"",        "decompiled code is returned to rizin as 'file:line code' (via CL)",
-		"pdda",	"",        "decompile current function with side assembly",
-		"pddb",	"",        "decompile current function but show only scopes",
-		"pddo",	"",        "decompile current function side by side with offsets",
-		"pddj", "",        "decompile current function as json",
-		"pddA", "",        "decompile current function with annotation output",
-		"pddf", "",        "decompile all functions",
-		"pddi",	"",        "generate issue data",
 
-		// "Evaluable Variables:", "", "",
-		// "jsdec.casts",	"",	"if false, hides all casts in the pseudo code",
-		// "jsdec.asm",	"",	"if true, shows pseudo next to the assembly",
-		// "jsdec.blocks",	"",	"if true, shows only scopes blocks",
-		// "jsdec.xrefs",	"",	"if true, shows all xrefs in the pseudo code",
-		// "jsdec.paddr",	"",	"if true, all xrefs uses physical addresses compare",
-		// "jsdec.theme",	"",	"defines the color theme to be used on jsdec",
+static const RzCmdDescHelp pdd_usage = {
+	.summary = "Core plugin for jsdec",
+};
 
-		// "Environment:", "", "",
-		// "JSDEC_HOME",	"",	"defaults to the root directory of the jsdec repo",
+//static_description_no_args(cmd_pdd_star,"decompiled code is returned to rizin as comment (via CCu)");
+static_description_no_args(pdd,"decompile current function");
+static_description_no_args(pddc,"decompiled code is returned to rizin as 'file:line code' (via CL)");
+static_description_no_args(pdda,"decompile current function with side assembly");
+static_description_no_args(pddb,"decompile current function but show only scopes");
+static_description_no_args(pddo,"decompile current function side by side with offsets");
+static_description_no_args(pddj,"decompile current function as json");
+static_description_no_args(pddA,"decompile current function with annotation output");
+static_description_no_args(pddf,"decompile all functions");
+static_description_no_args(pddi,"generate issue data");
 
-		NULL
-	};
+command_handler(pdd, "");
+command_handler(pdda, "--assembly");
+command_handler(pddA, "--annotation");
+command_handler(pddb, "--blocks");
+command_handler(pddc, "--as-code-line");
+command_handler(pddf, "--all-functions");
+command_handler(pddi, "--issue");
+command_handler(pddj, "--as-json");
+command_handler(pddo, "--offsets");
 
-	rz_cons_cmd_help(help, core->print->flags & RZ_PRINT_FLAGS_COLOR);
-}
-
-
-static void _cmd_pdd(RzCore *core, const char *input) {
-	switch (*input) {
-	case '\0':
-		duk_jsdec (core, input);
-		break;
-	case ' ':
-		duk_jsdec (core, input + 1);
-		break;
-	case 'i':
-		// --issue
-		duk_jsdec (core, "--issue");
-		break;
-	case 'a':
-		// --assembly
-		duk_jsdec (core, "--assembly");
-		break;
-	case 'o':
-		// --offsets
-		duk_jsdec (core, "--offsets");
-		break;
-	case 'b':
-		// --blocks
-		duk_jsdec (core, "--blocks");
-		break;
-	case 'c':
-		// --as-code-line
-		duk_jsdec (core, "--as-code-line");
-		break;
-	case 'f':
-		duk_jsdec (core, "--all-functions");
-		break;
-	case '*':
-		// --as-comment
-		duk_jsdec (core, "--as-comment");
-		break;
-	case 'j':
-		// --as-json
-		duk_jsdec (core, "--as-json");
-		break;
-	case 'A':
-		// --as-json
-		duk_jsdec (core, "--annotation");
-		break;
-	case '?':
-	default:
-		usage(core);
-		break;
-	}
-}
-
-static int rz_cmd_pdd(void *user, const char *input) {
-	RzCore *core = (RzCore *) user;
-	if (!strncmp (input, "pdd", 3)) {
-		_cmd_pdd (core, input + 3);
-		return true;
-	}
-	return false;
-}
-
-int rz_cmd_pdd_init(void *user, const char *cmd) {
-	RzCmd *rcmd = (RzCmd*) user;
-	RzCore *core = (RzCore *) rcmd->data;
+static bool rz_cmd_pdd_init(RzCore *core) {
+	RzCmd *rcmd = core->rcmd;
 	RzConfig *cfg = core->config;
+	RzCmdDesc *root_cd = rz_cmd_get_root(rcmd);
+	if (!root_cd) {
+		rz_warn_if_reached();
+		return false;
+	}
+
 	rz_config_lock (cfg, false);
 	SETPREF("jsdec.asm", "false", "if true, shows pseudo next to the assembly.");
 	SETPREF("jsdec.blocks", "false", "if true, shows only scopes blocks.");
@@ -281,39 +244,31 @@ int rz_cmd_pdd_init(void *user, const char *cmd) {
 	SETPREF("jsdec.xrefs", "false", "if true, shows all xrefs in the pseudo code.");
 	rz_config_lock (cfg, true);
 
-	// autocomplete here..
-	RzCoreAutocomplete *pdd = rz_core_autocomplete_add (core->autocomplete, "pdd", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pdd?", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pdd*", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pdda", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pddb", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pddc", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pddf", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pddi", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pdds", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (core->autocomplete, "pddu", RZ_CORE_AUTOCMPLT_DFLT, true);
-	rz_core_autocomplete_add (pdd, "--all-functions", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--as-code-line", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--as-comment", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--assembly", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--blocks", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--casts", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--colors", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--debug", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--html", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--issue", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--offsets", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--paddr", RZ_CORE_AUTOCMPLT_OPTN, true);
-	rz_core_autocomplete_add (pdd, "--xrefs", RZ_CORE_AUTOCMPLT_OPTN, true);
+
+	RzCmdDesc *pdd = rz_cmd_desc_group_new(rcmd, root_cd, "pdd", name_handler(pdd), &name_help(pdd), &pdd_usage);
+	if (!pdd) {
+		rz_warn_if_reached();
+		return false;
+	}
+
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pdda);
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddA);
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddb);
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddc);
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddf);
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddi);
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddj);
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddo);
+
 	return true;
 }
 
 RzCorePlugin rz_core_plugin_test = {
 	.name = "jsdec",
+	.author = "deroad",
 	.desc = "Pseudo-code decompiler for rizin",
 	.license = "GPL3",
-	.call = rz_cmd_pdd,
-	.init = rz_cmd_pdd_init
+	.init = rz_cmd_pdd_init,
 };
 
 #ifdef _MSC_VER
