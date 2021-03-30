@@ -1293,7 +1293,7 @@
     };
 
     var _fp_stack_at = function(idx) {
-        if (idx === NaN) {
+        if (isNaN(idx)) {
             idx = '?';
         }
         return [_FP_STACK, '[', idx, ']'].join('');
@@ -1938,18 +1938,18 @@
             ftst: function(instr, context, instructions) {
                 context.cond.a = _fp_stack_at(0);
                 context.cond.b = '0.0';
-                return base.nop();
+                return Base.nop();
             },
             // Compare Floating Point Values and Set EFLAGS
             fcomi: function(instr, context, instructions) {
                 context.cond.a = _fp_stack_at(0);
                 context.cond.b = _fp_resolve_opd(instr.parsed.opd[0]);
-                return base.nop();
+                return Base.nop();
             },
             fucomi: function(instr, context, instructions) {
                 context.cond.a = _fp_stack_at(0);
                 context.cond.b = _fp_resolve_opd(instr.parsed.opd[0]);
-                return base.nop();
+                return Base.nop();
             },
             // Compare Floating Point Values and Set EFLAGS and pop
             fcomip: function(instr, context, instructions) {
@@ -2104,7 +2104,6 @@
             fnsave: _nop, // store x87 fpu state
             fnstcw: _nop, // store x87 fpu control word
             fnstenv: _nop, // store x87 fpu environment
-            fnstsw: _nop, // store x87 fpu status word
             frstor: _nop, // restore x87 fpu state
             fsave: _nop, // store x87 fpu state
             fwait: _nop, // wait fpu
