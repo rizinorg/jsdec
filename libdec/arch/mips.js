@@ -69,15 +69,6 @@
         return Base.assign(e.opd[0], reg);
     };
 
-    var _value_at = function(address, bits) {
-        if ((bits == 32 || bits == 64) && rzcmd) {
-            //this is truly an hack
-            var p = JSON.parse(rzcmd('?j [0x' + address.toString(16) + ']').trim());
-            return Long.fromString(p['int' + bits], true, 10);
-        }
-        return address;
-    };
-
     var load_bits = function(instr, bits, unsigned) {
         instr.setBadJump();
         var e = instr.parsed;
@@ -201,7 +192,6 @@
 
 
     var lw_jalr = function(instr, start, instructions, context) {
-        var addr = null;
         var check = [
             function(e, r) {
                 if (e.mnem != 'lw' || e.opd[0].indexOf('t') != 0) {
