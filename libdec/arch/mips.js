@@ -406,7 +406,7 @@
                     /*
                       _delayed_branch (instr, context, instructions);
                     */
-                    return Base.return();
+                    return Base.call(instr.parsed.opd);
                 }
                 var reg = null;
                 for (var i = instructions.length - 1; i >= 0; i--) {
