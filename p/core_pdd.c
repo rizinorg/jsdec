@@ -263,7 +263,7 @@ static bool rz_cmd_pdd_init(RzCore *core) {
 	return true;
 }
 
-RzCorePlugin rz_core_plugin_test = {
+RzCorePlugin rz_core_plugin_jsdec = {
 	.name = "jsdec",
 	.author = "deroad",
 	.desc = "Pseudo-code decompiler for rizin",
@@ -280,7 +280,7 @@ RzCorePlugin rz_core_plugin_test = {
 #ifndef CORELIB
 _RZ_API RzLibStruct rizin_plugin = {
 	.type = RZ_LIB_TYPE_CORE,
-	.data = &rz_core_plugin_test,
+	.data = &rz_core_plugin_jsdec,
 	.version = RZ_VERSION,
 	.pkgname = "jsdec"
 };
