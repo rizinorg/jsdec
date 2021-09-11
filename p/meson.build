@@ -8,12 +8,12 @@ deps = []
 
 rizin_incdir = get_option('rizin_incdir')
 if rizin_incdir == '' and rizin.found()
-  rizin_incdir = run_command(rizin, '-H', 'INCDIR').stdout().strip()
+  rizin_incdir = run_command(rizin, '-H', 'RZ_INCDIR').stdout().strip()
 endif
 
 rizin_libdir = get_option('rizin_libdir')
 if rizin_libdir == '' and rizin.found()
-  rizin_libdir = run_command(rizin, '-H', 'LIBDIR').stdout().strip()
+  rizin_libdir = run_command(rizin, '-H', 'RZ_LIBDIR').stdout().strip()
 endif
 
 libs = ['rz_core', 'rz_util', 'rz_cons', 'rz_config', 'rz_io']
