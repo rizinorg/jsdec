@@ -16,7 +16,6 @@
  */
 
 (function() { // lgtm [js/useless-expression]
-    const Anno = require('libdec/annotation');
     var mident = '    ';
     var _unique_print = {
         rotate_left: [],
@@ -48,39 +47,14 @@
                     var call = this.name.replace(/###/g, bits);
                     var type = this.returns.replace(/###/g, bits);
                     var args = this.args.map(function(x) { return x.replace(/###/g, bits); });
-                    if (Global.evars.extra.annotation) {
-                        Global.context.addAnnotations([
-                            Anno.datatype(type),
-                            Anno.offset(' '),
-                            Anno.funcname(call),
-                            Anno.offset(' ('),
-                            Anno.datatype(args[0]),
-                            Anno.offset(' '),
-                            Anno.funcparam(args[1]),
-                            Anno.offset(', '),
-                            Anno.datatype(args[2]),
-                            Anno.offset(' '),
-                            Anno.funcparam(args[3]),
-                            Anno.offset(' ) {\n')
-                        ]);
-                        for (i = 0; i < this.data.length; i++) {
-                            Global.context.addAnnotation(Global.context.identfy());
-                            Anno.auto(this.data[i].replace(/###/g, this.bits)).forEach(function(x){
-                                Global.context.addAnnotation(x);
-                            });
-                        }
-                        Global.context.addAnnotation(Global.context.identfy() + '}\n');
-                    } else {
-                        args = args[0] + ' ' + args[1] + ', ' + args[2] + ' ' + args[3];
-                        var a = Global.printer.auto;
-                        var t = Global.printer.theme;
-                        Global.context.printLine(Global.context.identfy() + t.types(type) + ' ' + t.callname(call) + ' (' + args + ') {');
-                        for (i = 0; i < this.data.length; i++) {
-                            Global.context.printLine(Global.context.identfy() + a(this.data[i].replace(/###/g, this.bits)));
-                        }
-                        Global.context.printLine(Global.context.identfy() + '}');
+                    args = args[0] + ' ' + args[1] + ', ' + args[2] + ' ' + args[3];
+                    var a = Global.printer.auto;
+                    var t = Global.printer.theme;
+                    Global.context.printLine(Global.context.identfy() + t.types(type) + ' ' + t.callname(call) + ' (' + args + ') {');
+                    for (i = 0; i < this.data.length; i++) {
+                        Global.context.printLine(Global.context.identfy() + a(this.data[i].replace(/###/g, this.bits)));
                     }
-
+                    Global.context.printLine(Global.context.identfy() + '}');
                 };
             }
         },
@@ -106,38 +80,14 @@
                     var call = this.name.replace(/###/g, bits);
                     var type = this.returns.replace(/###/g, bits);
                     var args = this.args.map(function(x) { return x.replace(/###/g, bits); });
-                    if (Global.evars.extra.annotation) {
-                        Global.context.addAnnotations([
-                            Anno.datatype(type),
-                            Anno.offset(' '),
-                            Anno.funcname(call),
-                            Anno.offset(' ('),
-                            Anno.datatype(args[0]),
-                            Anno.offset(' '),
-                            Anno.funcparam(args[1]),
-                            Anno.offset(', '),
-                            Anno.datatype(args[2]),
-                            Anno.offset(' '),
-                            Anno.funcparam(args[3]),
-                            Anno.offset(' ) {\n')
-                        ]);
-                        for (i = 0; i < this.data.length; i++) {
-                            Global.context.addAnnotation(Global.context.identfy());
-                            Anno.auto(this.data[i].replace(/###/g, this.bits)).forEach(function(x) {
-                                Global.context.addAnnotation(x);
-                            });
-                        }
-                        Global.context.addAnnotation(Global.context.identfy() + '}\n');
-                    } else {
-                        var a = Global.printer.auto;
-                        var t = Global.printer.theme;
-                        args = args[0] + ' ' + args[1] + ', ' + args[2] + ' ' + args[3];
-                        Global.context.printLine(Global.context.identfy() + t.types(type) + ' ' + t.callname(call) + ' (' + args + ') {');
-                        for (i = 0; i < this.data.length; i++) {
-                            Global.context.printLine(Global.context.identfy() + a(this.data[i].replace(/###/g, this.bits)));
-                        }
-                        Global.context.printLine(Global.context.identfy() + '}');
+                    var a = Global.printer.auto;
+                    var t = Global.printer.theme;
+                    args = args[0] + ' ' + args[1] + ', ' + args[2] + ' ' + args[3];
+                    Global.context.printLine(Global.context.identfy() + t.types(type) + ' ' + t.callname(call) + ' (' + args + ') {');
+                    for (i = 0; i < this.data.length; i++) {
+                        Global.context.printLine(Global.context.identfy() + a(this.data[i].replace(/###/g, this.bits)));
                     }
+                    Global.context.printLine(Global.context.identfy() + '}');
                 };
             }
         },
@@ -152,12 +102,8 @@
                         return;
                     }
                     _unique_print.bit_mask = true;
-                    if (Global.evars.extra.annotation) {
-                        Global.context.addAnnotation(Anno.comment(this.mask + '\n'));
-                    } else {
-                        var t = Global.printer.theme;
-                        Global.context.printLine(Global.context.identfy() + t.macro(this.mask));
-                    }
+                    var t = Global.printer.theme;
+                    Global.context.printLine(Global.context.identfy() + t.macro(this.mask));
                 };
             }
         },
@@ -190,16 +136,9 @@
                         return;
                     }
                     _unique_print.swap_endian.push(this.bits);
-                    var i;
-                    if (Global.evars.extra.annotation) {
-                        for (i = 0; i < this.data.length; i++) {
-                            Global.context.addAnnotation(Anno.comment(this.data[i] + '\n'));
-                        }
-                    } else {
-                        var t = Global.printer.theme;
-                        for (i = 0; i < this.data.length; i++) {
-                            Global.context.printLine(Global.context.identfy() + t.macro(this.data[i]));
-                        }
+                    var t = Global.printer.theme;
+                    for (var i = 0; i < this.data.length; i++) {
+                        Global.context.printLine(Global.context.identfy() + t.macro(this.data[i]));
                     }
                 };
             }

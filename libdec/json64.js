@@ -285,6 +285,9 @@ const Long = require('libdec/long');
         var comma = false;
         if (Array.isArray(variable)) {
             used.push(variable);
+            if (variable.length < 1) {
+                return "[]";
+            }
             str = "[" + nl;
             for (k = 0; k < variable.length; k++) {
                 sval = _iterate_value(variable[k], pad, depth + 1, used);

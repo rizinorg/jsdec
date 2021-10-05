@@ -16,7 +16,6 @@
  */
 
 (function() { // lgtm [js/useless-expression]
-    const Anno = require('libdec/annotation');
     const Base = require('libdec/core/base');
     const Block = require('libdec/core/block');
     const Scope = require('libdec/core/scope');
@@ -69,16 +68,6 @@
             globals: arch.globalvars(arch_context) || []
         });
 
-        var ivars =  Array.prototype.concat(data.xrefs.arguments.bp, data.xrefs.arguments.sp, data.xrefs.arguments.reg);
-        ivars.sort(function(x, y) {
-            if (x.name < y.name) {
-                return -1;
-            }
-            return x.name > y.name ? 1 : 0;
-        });
-        for (var i = session.instructions.length - 1; i >= 0; i--) {
-            session.instructions[i].variables = ivars;
-        }
         session.routine = routine;
     };
 
@@ -141,28 +130,18 @@
             var asm_header = Global.evars.honor.offsets ? '' : '; assembly';
             var details = '/* ' + Global.evars.extra.file + ' @ 0x' + Global.evars.extra.offset.toString(16) + ' */';
             
-            if (Global.evars.extra.annotation) {
-                Global.context.addAnnotation(Anno.comment('/* jsdec pseudo code output */\n'));
-                Global.context.addAnnotation(Anno.comment(details + '\n'));
-            } else {
-                Global.context.printLine(Global.context.identfy(asm_header.length, t.comment(asm_header)) + t.comment('/* jsdec pseudo code output */'));
-                Global.context.printLine(Global.context.identfy() + t.comment(details));
-            }
+            Global.context.printLine(Global.context.identfy(asm_header.length, t.comment(asm_header)) + t.comment('/* jsdec pseudo code output */'));
+            Global.context.printLine(Global.context.identfy() + t.comment(details));
             if (['java', 'dalvik'].indexOf(Global.evars.arch) < 0) {
                 Global.context.printMacros();
                 Global.context.printDependencies();
             }
         }
         session.print();
-        var last_instr = session.instructions[session.instructions.length - 1];
         while (Global.context.ident.length > 0) {
             Global.context.identOut();
             var value = Global.context.identfy() + '}';
-            if (Global.evars.extra.annotation) {
-                Global.context.addAnnotation(value + '\n', last_instr ? last_instr.location : null);
-            } else {
-                Global.context.printLine(value);
-            }
+            Global.context.printLine(value);
         }
     };
 

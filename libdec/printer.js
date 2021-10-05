@@ -21,6 +21,7 @@
     /**
      * Imports.
      */
+    const Anno = require('libdec/annotation');
     const Long = require('libdec/long');
     const json64 = require('libdec/json64');
 
@@ -174,33 +175,17 @@
      */
     var _flush_output = function(lines, errors, log, evars) {
         if (evars.annotation && lines) {
-            var jdan = {};
-            var last = {};
-            var anno = [];
-            jdan.code = "";
+            var actx = Anno.context();
+            var res = {
+                code: "",
+                annotations: []
+            };
             lines.forEach(function(x) {
-                if (!x.define) {
-                    throw new Error("invalid object");
-                }
-                if (x.type == "offset") {
-                    var def = x.define(jdan.code.length);
-                    if (last.type != "offset") {
-                        anno.push(def);
-                        last = x;
-                    } else {
-                        anno[anno.length - 1].end = def.end;
-                    }
-                } else {
-                    if (["function_name", "function_parameter", "local_variable"].indexOf(x.type) >= 0) {
-                        anno.push(x.define(jdan.code.length));
-                    }
-                    anno.push(x.syntax(jdan.code.length));
-                    last = x;
-                }
-                jdan.annotations = anno;
-                jdan.code += x.value;
+                var parsed = Anno.parse(res.code.length, x, actx);
+                res.annotations = res.annotations.concat(parsed);
+                res.code += x.str + '\n';
             });
-            console.log(json64.stringify(jdan));
+            console.log(json64.stringify(res));
         } else if (evars.json) {
             var jdata = {};
             if (lines && lines.length > 0) {

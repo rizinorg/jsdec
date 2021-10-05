@@ -19,7 +19,6 @@
     const Long = require('libdec/long');
     const Extra = require('libdec/core/extra');
     const Objects = require('libdec/core/objects');
-    const Anno = require('libdec/annotation');
 
     var _internal_label_cnt = 0;
     var _internal_variable_cnt = 0;
@@ -43,10 +42,6 @@
         this.toString = function() {
             return Global.printer.theme.labels(this.name);
         };
-
-        this.toAnnotation = function(location) {
-            return Anno.offset(this.name, location);
-        };
     };
 
     var _func_ptr = function(name, type, args) {
@@ -62,23 +57,6 @@
 
         this.toString = function() {
             return Global.printer.theme.types(this.type) + ' (*' + Global.printer.auto(this.name) + ')(' + this.args.join(', ') + ')';
-        };
-
-        this.toAnnotation = function(location) {
-            var a = [
-                Anno.offset('*(', location),
-                Anno.funcname(this.name),
-                Anno.offset(')(', location),
-            ];
-            this.args.forEach(function(x) {
-                if (typeof(x) === 'string') {
-                    a.push(Anno.localvar(x, location));
-                } else {
-                    a.push(x.toAnnotation(location));
-                }
-            });
-            a.push(Anno.offset(')', location));
-            return a;
         };
     };
 
@@ -107,11 +85,6 @@
 
             return c + Global.printer.auto(autoParen(this.name)) + ')';
         };
-
-        this.toAnnotation = function(location) {
-            var c = '*(' + autoParen(this.name) + ')';
-            return Anno.offset(c, location);
-        };
     };
 
     var _local = function(name, type) {
@@ -128,10 +101,6 @@
             }
 
             return Global.printer.auto(this.name);
-        };
-
-        this.toAnnotation = function(location) {
-            return Anno.localvar(this.content, location);
         };
     };
 
@@ -152,10 +121,6 @@
         this.toString = function(define) {
             return define ? null : Global.printer.theme.text(this.content);
         };
-
-        this.toAnnotation = function(location) {
-            return Anno.offset(this.content, location);
-        };
     };
 
     var _number = function(content) {
@@ -168,10 +133,6 @@
         this.toString = function(define) {
             return define ? null : Global.printer.theme.integers(this.content);
         };
-
-        this.toAnnotation = function(location) {
-            return Anno.constvar(this.content, location);
-        };
     };
 
     var _macro = function(content) {
@@ -183,10 +144,6 @@
 
         this.toString = function(define) {
             return define ? null : Global.printer.theme.macro(this.content);
-        };
-
-        this.toAnnotation = function(location) {
-            return Anno.localvar(this.content, location);
         };
     };
 

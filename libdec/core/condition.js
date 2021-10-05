@@ -17,7 +17,6 @@
 
 (function() { // lgtm [js/useless-expression]
     const Extra = require('libdec/core/extra');
-    const Anno = require('libdec/annotation');
 
     const _cmps = {
         CUST: ['', ''],
@@ -54,9 +53,6 @@
                     return '!(' + a + Global.printer.theme.flow(_cmps[this.condition][0]) + b + ')';
                 }
                 return a + _cmps[this.condition][0] + b;
-            };
-            this.toAnnotation = function(location) {
-                return Anno.auto(this.toString(), location);
             };
         },
     };

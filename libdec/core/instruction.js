@@ -16,7 +16,6 @@
  */
 
 (function() { // lgtm [js/useless-expression]
-    const Anno = require('libdec/annotation');
     const Long = require('libdec/long');
     const Condition = require('libdec/core/condition');
     const Extra = require('libdec/core/extra');
@@ -90,19 +89,6 @@
             } else {
                 Global.context.printLine(Global.context.identfy(s, t.integers(addr) + ' ' + b(instr.simplified)) + (_printable(instr) ? (instr.code + ';') : ''), instr.location);
             }
-        } else if (Global.evars.extra.annotation) {
-            var loc = instr.jump ? instr.jump : (instr.pointer ? instr.pointer : instr.location);
-            if (instr.code && instr.code.composed) {
-                for (i = 0; i < instr.code.composed.length; i++) {
-                    Global.context.addAnnotation(Global.context.identfy(), loc);
-                    Global.context.addAnnotations(Anno.auto(instr.code.composed[i], loc, instr.variables));
-                    Global.context.addAnnotation(';\n', loc);
-                }
-            } else if (_printable(instr)) {
-                Global.context.addAnnotation(Global.context.identfy(), loc);
-                Global.context.addAnnotations(Anno.auto(instr.code, loc, instr.variables));
-                Global.context.addAnnotation(';\n', loc);
-            }
         } else {
             if (instr.code && instr.code.composed) {
                 for (i = 0; i < instr.code.composed.length; i++) {
@@ -132,7 +118,6 @@
         this.label = null;
         this.cond = null;
         this.customflow = null;
-        this.variables = [];
         this.xrefs = data.xrefs ? data.xrefs.slice() : [];
         this.refs = data.refs ? data.refs.slice() : [];
         this.comments = data.comment ? [new TextDecoder().decode(Duktape.dec('base64', data.comment))] : [];
@@ -161,36 +146,16 @@
             var t = Global.printer.theme;
             var empty = Global.context.identfy();
             if (this.comments.length == 1) {
-                if (Global.evars.extra.annotation) {
-                    Global.context.addAnnotation(empty, this.location);
-                    Global.context.addAnnotation(Anno.comment('/* ' + this.comments[0] + ' */\n', this.location));
-                } else {
-                    Global.context.printLine(empty + t.comment('/* ' + this.comments[0] + ' */', this.location));
-                }
+                Global.context.printLine(empty + t.comment('/* ' + this.comments[0] + ' */', this.location));
             } else if (this.comments.length > 1) {
-                if (Global.evars.extra.annotation) {
-                    Global.context.addAnnotation(empty, this.location);
-                    Global.context.addAnnotation(Anno.comment('/* ' + this.comments[0] + '\n', this.location));
-                } else {
-                    Global.context.printLine(empty + t.comment('/* ' + this.comments[0]), this.location);
-                }
+                Global.context.printLine(empty + t.comment('/* ' + this.comments[0]), this.location);
                 for (var i = 1; i < this.comments.length; i++) {
                     var comment = ' * ' + this.comments[i] + (i == this.comments.length - 1 ? ' */' : '');
-                    if (Global.evars.extra.annotation) {
-                        Global.context.addAnnotation(empty, this.location);
-                        Global.context.addAnnotation(Anno.comment(comment + '\n', this.location));
-                    } else {
-                        Global.context.printLine(empty + t.comment(comment), this.location);
-                    }
+                    Global.context.printLine(empty + t.comment(comment), this.location);
                 }
             }
             if (this.label) {
-                if (Global.evars.extra.annotation) {
-                    Global.context.addAnnotation(Global.context.identfy(null, null, true), this.location);
-                    Global.context.addAnnotation(Anno.keyword(this.label + ':\n', this.location));
-                } else {
-                    Global.context.printLine(Global.context.identfy(null, null, true) + this.label + ':', this.location);
-                }
+                Global.context.printLine(Global.context.identfy(null, null, true) + this.label + ':', this.location);
             }
             _asm_view(this);
         };

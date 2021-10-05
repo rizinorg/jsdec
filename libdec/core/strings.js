@@ -32,6 +32,10 @@
         return a.location.lt(b.location) ? -1 : (a.location.eq(b.location) ? 0 : 1);
     };
 
+    var _str_compare_size = function(a, b) {
+        return a.value < b.value ? -1 : (a.value == b.value ? 0 : 1);
+    };
+
     var _sanitize = function(x) {
         return x.paddr || x.vaddr || x.offset;
     };
@@ -54,13 +58,13 @@
     /*
      * Expects the Csj json as input.
      */
-    return function(Csj) {
+    return function(Csj, sort_by_size) {
         this.data = Csj.filter(_sanitize).map(function(x) {
             return {
                 location: Global.evars.honor.paddr ? x.paddr : x.vaddr || x.offset,
                 value: (new TextDecoder().decode(Duktape.dec('base64', x.string || x.name))).replace(/\\\\/g, '\\')
             };
-        }).sort(_str_compare_location);
+        }).sort(sort_by_size ? _str_compare_size : _str_compare_location);
         this.search = function(address) {
             if (address) {
                 if (!Global.evars.extra.slow) {
