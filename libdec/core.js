@@ -48,9 +48,8 @@
      * @param  {Object} session      - Current session object.
      * @param  {Object} arch         - Current architecture object
      * @param  {Object} arch_context - Current architecture context object.
-     * @param  {Object} data         - Data object retrieved from rizin.
      */
-    var _post_analysis = function(session, arch, arch_context, data) {
+    var _post_analysis = function(session, arch, arch_context) {
         ControlFlow(session);
         if (arch.postanalisys) {
             arch.postanalisys(session.instructions, arch_context);
