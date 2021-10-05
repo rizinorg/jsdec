@@ -16,7 +16,6 @@
  */
 
 (function() { // lgtm [js/useless-expression]
-    const Anno = require('libdec/annotation');
     const Base = require('libdec/core/base');
     const Block = require('libdec/core/block');
     const Scope = require('libdec/core/scope');
@@ -67,6 +66,7 @@
             locals: arch.localvars(arch_context) || [],
             globals: arch.globalvars(arch_context) || []
         });
+
         session.routine = routine;
     };
 
@@ -129,28 +129,18 @@
             var asm_header = Global.evars.honor.offsets ? '' : '; assembly';
             var details = '/* ' + Global.evars.extra.file + ' @ 0x' + Global.evars.extra.offset.toString(16) + ' */';
             
-            if (Global.evars.extra.annotation) {
-                Global.context.addAnnotation(Anno.comment('/* jsdec pseudo code output */\n'));
-                Global.context.addAnnotation(Anno.comment(details + '\n'));
-            } else {
-                Global.context.printLine(Global.context.identfy(asm_header.length, t.comment(asm_header)) + t.comment('/* jsdec pseudo code output */'));
-                Global.context.printLine(Global.context.identfy() + t.comment(details));
-            }
+            Global.context.printLine(Global.context.identfy(asm_header.length, t.comment(asm_header)) + t.comment('/* jsdec pseudo code output */'));
+            Global.context.printLine(Global.context.identfy() + t.comment(details));
             if (['java', 'dalvik'].indexOf(Global.evars.arch) < 0) {
                 Global.context.printMacros();
                 Global.context.printDependencies();
             }
         }
         session.print();
-        var last_instr = session.instructions[session.instructions.length - 1];
         while (Global.context.ident.length > 0) {
             Global.context.identOut();
             var value = Global.context.identfy() + '}';
-            if (Global.evars.extra.annotation) {
-                Global.context.addAnnotation(value + '\n', last_instr ? last_instr.location : null);
-            } else {
-                Global.context.printLine(value);
-            }
+            Global.context.printLine(value);
         }
     };
 

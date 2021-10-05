@@ -18,7 +18,6 @@
 (function() { // lgtm [js/useless-expression]
     const Cpp = require('libdec/db/cpp');
     const CCalls = require('libdec/db/c_calls');
-    const Anno = require('libdec/annotation');
     const Extra = require('libdec/core/extra');
     const Variable = require('libdec/core/variable');
     const Long = require('libdec/long');
@@ -50,13 +49,6 @@
     var _generic_asm = function(asm) {
         this.asm = asm;
 
-        this.toAnnotation = function(location) {
-            return [
-                Anno.keyword('__asm'),
-                Anno.offset(' ("' + this.asm + '")', location)
-            ];
-        };
-
         this.toString = function() {
             return Global.printer.theme.callname('__asm') + ' (' + Global.printer.theme.text('"' + this.asm + '"') + ')';
         };
@@ -74,10 +66,6 @@
             autoString(operand)
         ];
 
-        this.toAnnotation = function(location) {
-            return Anno.offset(this.toString(), location);
-        };
-
         /** @returns {!string} */
         this.toString = function() {
             return [
@@ -94,10 +82,6 @@
      */
     var _uexpr_pf = function(operator, operand) {
         _uexpr.call(this, operator, [operand]);
-
-        this.toAnnotation = function(location) {
-            return Anno.auto(this.toString(), location);
-        };
 
         /** @returns {!string} */
         this.toString = function() {
@@ -123,10 +107,6 @@
             autoString(rhand)
         ];
 
-        this.toAnnotation = function(location) {
-            return Anno.auto(this.toString(), location);
-        };
-
         /** @returns {!string} */
         this.toString = function() {
             return [
@@ -150,10 +130,6 @@
             autoParen(autoString(operand2)),
             autoParen(autoString(operand3))
         ];
-
-        this.toAnnotation = function(location) {
-            return Anno.auto(this.toString(), location);
-        };
 
         /** @returns {!string} */
         this.toString = function() {
@@ -191,15 +167,6 @@
         this.function_name = Extra.is.string(function_name) ? Cpp(Extra.replace.call(function_name)) : function_name;
         this.callargs = args || [];
 
-        this.toAnnotation = function(location) {
-            var a = [
-                Anno.funcname(this.function_name, location),
-                Anno.offset(' (', location)
-            ];
-            Array.prototype.push.apply(a, Anno.auto(this.callargs.join(', ') + ')', location));
-            return a;
-        };
-
         this.toString = function() {
             var fname = this.function_name;
 
@@ -219,13 +186,6 @@
         this.prefix = prefix || "";
         this.postfix = postfix || "";
 
-        this.toAnnotation = function(location) {
-            var a = Anno.auto(this.prefix + this.object_this + this.method_sep, location);
-            a.push(Anno.funcname(this.function_name.toString(), location));
-            Array.prototype.push.apply(a, Anno.auto('(' + this.callargs.join(', ') + ') ' + this.postfix, location));
-            return a;
-        };
-
         this.toString = function() {
             var fname = this.function_name;
 
@@ -243,17 +203,6 @@
         this.source_a = source_a;
         this.rotation = Extra.is.number(rotation) ? ("0x" + rotation.toString(16)) : rotation;
 
-        this.toAnnotation = function(location) {
-            var a = [
-                Anno.offset(autoString(this.destination) + ' = ', location),
-                Anno.funcname(this.call, location),
-                Anno.offset(' (', location),
-            ];
-            var args = [autoString(this.source_a), autoString(this.rotation)].join(', ');
-            Array.prototype.push.apply(a, Anno.auto(args, location));
-            return a;
-        };
-
         this.toString = function() {
             var args = [autoString(this.source_a), autoString(this.rotation)];
 
@@ -266,20 +215,6 @@
 
     var _generic_return = function(value) {
         this.value = value;
-
-        this.toAnnotation = function(location) {
-            if (!this.value) {
-                return [Anno.keyword('return', location)];
-            }
-            var a = this.value.toAnnotation ? this.value.toAnnotation(location) : Anno.auto(this.value, location);
-            if (!Array.isArray(a)) {
-                a = [a];
-            }
-            return [
-                Anno.keyword('return', location),
-                Anno.offset(' ', location)
-            ].concat(a);
-        };
 
         this.toString = function(options) {
             var value = '';
@@ -295,17 +230,6 @@
     var _generic_goto = function(label_or_address) {
         this.value = label_or_address;
 
-        this.toAnnotation = function(location) {
-            var a = this.value.toAnnotation ? this.value.toAnnotation(location) : Anno.auto(this.value, location);
-            if (!Array.isArray(a)) {
-                a = [a];
-            }
-            return [
-                Anno.keyword('goto', location),
-                Anno.offset(' ', location)
-            ].concat(a);
-        };
-
         this.toString = function(options) {
             return [Global.printer.theme.flow('goto'), autoString(this.value)].join(' ');
         };
@@ -313,10 +237,6 @@
 
     var _generic_flow = function(name) {
         this.name = name;
-
-        this.toAnnotation = function(location) {
-            return Anno.keyword(this.name, location);
-        };
 
         this.toString = function(options) {
             return Global.printer.theme.flow(this.name);
@@ -329,10 +249,6 @@
         this.field = field;
         this.method_sep = method_sep;
         this.is_from = is_from;
-
-        this.toAnnotation = function(location) {
-            return Anno.auto(this.toString(), location);
-        };
 
         this.toString = function(options) {
             if (this.is_from) {
@@ -356,10 +272,6 @@
         this.index = index;
         this.is_from = is_from;
 
-        this.toAnnotation = function(location) {
-            return Anno.auto(this.toString(), location);
-        };
-
         this.toString = function(options) {
             if (this.is_from) {
                 return [
@@ -381,16 +293,6 @@
     var _generic_throw = function(value) {
         this.value = value;
 
-        this.toAnnotation = function(location) {
-            if (!this.value) {
-                return [Anno.keyword('throw', location)];
-            }
-            return [
-                Anno.keyword('throw', location),
-                Anno.offset(' ', location)
-            ].concat(Anno.auto(autoString(this.value), location));
-        };
-
         this.toString = function(options) {
             var value = '';
 
@@ -406,14 +308,6 @@
         this.object_this = object_this;
         this.function_name = function_name;
         this.callargs = function_arguments || [];
-
-        this.toAnnotation = function(location) {
-            return [
-                Anno.offset('[', location),
-                Anno.keyword(this.object_this, location),
-                Anno.funcname(this.function_name, location)
-            ].concat(Anno.auto(this.callargs.join(' ') + ']', location));
-        };
 
         this.toString = function() {
             var fname = this.object_this;

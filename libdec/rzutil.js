@@ -277,8 +277,10 @@
                 this.extra.highlights = false;
             }
         },
-        data: function() {
-            var isfast = !rzpipe.bool('e jsdec.slow');
+        data: function(isfast) {
+            if (isfast === undefined) {
+                isfast = !rzpipe.bool('e jsdec.slow');
+            }
             this.arch = rzpipe.string('e asm.arch');
             this.bits = rzpipe.int('e asm.bits', 32);
             this.xrefs = {

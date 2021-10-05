@@ -567,11 +567,12 @@
     /**
      * Return a list of the cdecl function call arguments.
      * @param {Array<Object>} instrs Array of instructions preceding the function call
-     * @param {number} nargs Number of arguments expected for this function call
+     * @param {number} nargs   Number of arguments expected for this function call
      * @param {Object} context Context object
+     * @param {Object} instr   Instruction object
      * @returns {Array<Variable>} An array of arguments instances, ordered as declared in callee
      */
-    var _populate_cdecl_call_args = function(instrs, nargs, context) {
+    var _populate_cdecl_call_args = function(instrs, nargs, context, instr) {
         var args = [];
         var argidx = 0;
         var arg;
@@ -954,7 +955,7 @@
                 nargs = guess_nargs(instrs.slice(0, start), context);
             }
 
-            args = populate_call_args(instrs.slice(0, start), nargs, context);
+            args = populate_call_args(instrs.slice(0, start), nargs, context, instr);
         } else {
             // trying to identify the fcn..
             nargs = callname.startsWith('sym.') || callname.startsWith('reloc.') ?
@@ -971,12 +972,12 @@
                 }
 
                 if (callee && nargs > -1) {
-                    args = callee(instrs.slice(0, start), nargs, context);
+                    args = callee(instrs.slice(0, start), nargs, context, instr);
                 }
             } else {
                 args = _populate_systemv_amd64_call_args(instrs.slice(0, start), nargs, context);
                 if (args.length < 1 && nargs > 0) {
-                    _populate_cdecl_call_args(instrs.slice(0, start), nargs, context);
+                    _populate_cdecl_call_args(instrs.slice(0, start), nargs, context, instr);
                 }
             }
         }
