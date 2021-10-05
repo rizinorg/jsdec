@@ -75,8 +75,6 @@
             return {
                 comment: false,
                 arch: data.arch,
-                functions: [],
-                variables: [],
                 strings: new Strings(data.xrefs.strings, true).data,
                 functions: new Functions(data.xrefs.functions, true).data.map(function(x) {
                     return {
@@ -94,7 +92,7 @@
             var string_beg = ll,
                 string_end = -1;
             if (line.str.trim().startsWith('/*') || context.comment) {
-                context.comment = !line.str.endsWith('*/')
+                context.comment = !line.str.endsWith('*/');
                 a.push(new Annotation(current + line.str.indexOf('/*'), ll, line.str, null, "syntax_highlight", "comment"));
                 return a;
             } else if (line.str.startsWith('//')) {
@@ -111,10 +109,9 @@
                 pos = line.str.indexOf(str);
                 if (pos > 0) {
                     // include the ""
-                    var start = current + pos;
-                    a.push(new Annotation(start, str.length, str, it.location, "constant_variable", null));
-                    a.push(new Annotation(start, str.length, str, null, "syntax_highlight", "constant_variable"));
-                    a.push(new Annotation(start, str.length, str, it.location, "offset", null));
+                    a.push(new Annotation(current + pos, str.length, str, it.location, "constant_variable", null));
+                    a.push(new Annotation(current + pos, str.length, str, null, "syntax_highlight", "constant_variable"));
+                    a.push(new Annotation(current + pos, str.length, str, it.location, "offset", null));
                     string_beg = pos;
                     string_end = string_beg + str.length;
                     break;
@@ -145,11 +142,10 @@
                     it = context.functions[i];
                     pos = line.str.search(new RegExp('\\b' + it.value + '\\b'));
                     if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
-                        var start = current + pos;
-                        a.push(new Annotation(start, it.value.length, it.name, it.location, "function_name", null));
-                        a.push(new Annotation(start, it.value.length, it.value, null, "syntax_highlight", "function_name"));
+                        a.push(new Annotation(current + pos, it.value.length, it.name, it.location, "function_name", null));
+                        a.push(new Annotation(current + pos, it.value.length, it.value, null, "syntax_highlight", "function_name"));
                         var call = line.str.substr(pos, line.str.indexOf(')'));
-                        a.push(new Annotation(start, call.length, call, it.location, "offset", null));
+                        a.push(new Annotation(current + pos, call.length, call, it.location, "offset", null));
                         break;
                     }
                 }
@@ -157,7 +153,7 @@
             /* variables */
             for (i = context.variables.length - 1, old = 0; i >= 0; i--) {
                 it = context.variables[i];
-                pos = it.type.match(_re_types) ? -1 : line.str.search(new RegExp('\\b' + it.type + '\\b'));;
+                pos = it.type.match(_re_types) ? -1 : line.str.search(new RegExp('\\b' + it.type + '\\b'));
                 if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
                     a.push(new Annotation(current + pos, it.type.length, it.type, null, "syntax_highlight", "datatype"));
                 }
@@ -171,27 +167,27 @@
             /* keywords */
             tmp = line.str.match(_re_keywords) || [];
             _match_annotation(_re_keywords, line.str, function(pos, match) {
-                    if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
-                        a.push(new Annotation(current + pos, match.length, match, null, "syntax_highlight", "keyword"));
-                    }
-                })
-                /* numbers */
+                if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
+                    a.push(new Annotation(current + pos, match.length, match, null, "syntax_highlight", "keyword"));
+                }
+            });
+            /* numbers */
             _match_annotation(_re_numbers, line.str, function(pos, match) {
-                    if (match.length > 1 && match.charAt(0) == '0' && match.charAt(1) != 'x') {
-                        return;
-                    }
-                    if (match != '0') {
-                        pos = old + line.str.substr(old, ll).indexOf(match);
-                    } else {
-                        pos = old + line.str.substr(old, ll).search(/\b0\b/);
-                    }
-                    if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
-                        var location = Long.fromString(match);
-                        a.push(new Annotation(current + pos, match.length, match, location, "offset"));
-                        a.push(new Annotation(current + pos, match.length, match, null, "syntax_highlight", "constant_variable"));
-                    }
-                })
-                /* types */
+                if (match.length > 1 && match.charAt(0) == '0' && match.charAt(1) != 'x') {
+                    return;
+                }
+                if (match != '0') {
+                    pos = old + line.str.substr(old, ll).indexOf(match);
+                } else {
+                    pos = old + line.str.substr(old, ll).search(/\b0\b/);
+                }
+                if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
+                    var location = Long.fromString(match);
+                    a.push(new Annotation(current + pos, match.length, match, location, "offset"));
+                    a.push(new Annotation(current + pos, match.length, match, null, "syntax_highlight", "constant_variable"));
+                }
+            });
+            /* types */
             _match_annotation(_re_types, line.str, function(pos, match) {
                 if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
                     a.push(new Annotation(current + pos, match.length, match, null, "syntax_highlight", "datatype"));
