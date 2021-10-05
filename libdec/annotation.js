@@ -18,8 +18,8 @@
 (function() { // lgtm [js/useless-expression]
 	const _re = {
 		controlflow: /\bif\b|\belse\b|\bwhile\b|\bfor\b|\bdo\b|\breturn\b|\bthrow\b/g,
-		definebits: /[ui]+nt[123468]+_t|\bvoid\b|\bconst\b|\bsizeof\b|\bfloat\b|\bdouble\b|\bchar\b|\bwchar_t\b|\bextern\b|\bstruct\b|\bsize_t\b|\btime_t\b|\bboolean\b/g,
-		numbers: /0x[0-9a-fA-F]+|\b(?![;[])\d+(?![;m])\b/g,
+		definebits: /\b[ui]+nt[123468]+_t\b|\bvoid\b|\bconst\b|\bsizeof\b|\bfloat\b|\bdouble\b|\bchar\b|\bwchar_t\b|\bextern\b|\bstruct\b|\bsize_t\b|\btime_t\b|\bboolean\b/g,
+		numbers: /\b0x[0-9a-fA-F]+\b|\b(?![;[])\d+(?![;m])\b/g,
 		string: /"[^"]+"/,
 	};
 
@@ -71,8 +71,8 @@
 			if (["function_name", "function_parameter", "local_variable"].indexOf(this.type) >= 0) {
 				d.name = this.value;
 			}
-			if (["function_name", "offset"].indexOf(this.type) >= 0) {
-				d.offset = this.location.toString();
+			if (["function_name", "offset", "global_variable", "constant_variable"].indexOf(this.type) >= 0) {
+				d.offset = this.location;
 			}
 			return d;
 		};
@@ -100,17 +100,34 @@
 
 	return {
 		/* do some magic and autoassigne the values. */
-		auto: function(value, location) {
+		auto: function(value, location, variables) {
 			if (typeof(value) !== "string") {
 				if (value && value.toAnnotation) {
 					value = value.toAnnotation(location);
-				} else if (value.__isLong__ || typeof (value) === 'number') {
-					value = new Annotation('0x' + value.toString(16), location, "constant_variable");
+				} else if (value.__isLong__ || typeof (value) === 'number' || value.toString().match(/^0x[0-9a-fA-F]+$|^\d+$/g)) {
+					value = new Annotation('0x' + value.toString(16), value, "offset");
+				} else if (value.toString().match(/^0x[0-9a-fA-F]+$|^\d+$/g)) {
+					value = new Annotation(value.toString(), parseInt(value.toString()), "offset");
 				}
-				return Array.isArray(value) ? _rebuild(value) : [value];
+				value = Array.isArray(value) ? _rebuild(value) : [value.toString()];
+				for (i = 0; i < value.length && variables; i++) {
+					//if (typeof(value[i]) !== "string") {
+					//	continue;
+					//}
+					for (var j = variables.length - 1; j >= 0; j--) {
+						var type = variables[j].kind === 'arg' || variables[j].kind === 'reg' ? "function_parameter" : "local_variable";
+						var p = _auto_annotation(new RegExp('\b' + variables[j].name + '\b', 'g'), value[i].toString(), type, location);
+						if (typeof(p) !== "string") {
+							value[i] = p;
+							break;
+						}
+					}
+				}
+				return _rebuild(value);
 			}
 			var i;
-			var a = _auto_annotation(_re.string, value, "offset", location);
+			var a = _auto_annotation(_re.string, value, "constant_variable", location);
+			a = _rebuild(a);
 			for (i = 0; i < a.length; i++) {
 				if (typeof(a[i]) === "string") {
 					a[i] = _auto_annotation(_re.controlflow, a[i], "keyword", location);

@@ -29,7 +29,7 @@
         return (new Condition.convert(cond.a, cond.b, cond.type, false)).toString();
     };
 
-    var _asm_r2_view = function(instr, ascodeline) {
+    var _asm_rizin_view = function(instr, ascodeline) {
         var s = '';
         if (instr.label) {
             s = instr.label.name + ":\n";
@@ -90,25 +90,26 @@
             } else {
                 Global.context.printLine(Global.context.identfy(s, t.integers(addr) + ' ' + b(instr.simplified)) + (_printable(instr) ? (instr.code + ';') : ''), instr.location);
             }
+        } else if (Global.evars.extra.annotation) {
+            var loc = instr.jump ? instr.jump : (instr.pointer ? instr.pointer : instr.location);
+            if (instr.code && instr.code.composed) {
+                for (i = 0; i < instr.code.composed.length; i++) {
+                    Global.context.addAnnotation(Global.context.identfy(), loc);
+                    Global.context.addAnnotations(Anno.auto(instr.code.composed[i], loc, instr.variables));
+                    Global.context.addAnnotation(';\n', loc);
+                }
+            } else if (_printable(instr)) {
+                Global.context.addAnnotation(Global.context.identfy(), loc);
+                Global.context.addAnnotations(Anno.auto(instr.code, loc, instr.variables));
+                Global.context.addAnnotation(';\n', loc);
+            }
         } else {
             if (instr.code && instr.code.composed) {
                 for (i = 0; i < instr.code.composed.length; i++) {
-                    if (Global.evars.extra.annotation) {
-                        Global.context.addAnnotation(Global.context.identfy(), instr.location);
-                        Global.context.addAnnotations(Anno.auto(instr.code.composed[i], instr.location));
-                        Global.context.addAnnotation(';\n', instr.location);
-                    } else {
-                        Global.context.printLine(Global.context.identfy() + instr.code.composed[i] + ';', instr.location);
-                    }
+                    Global.context.printLine(Global.context.identfy() + instr.code.composed[i] + ';', instr.location);
                 }
             } else if (_printable(instr)) {
-                if (Global.evars.extra.annotation) {
-                    Global.context.addAnnotation(Global.context.identfy(), instr.location);
-                    Global.context.addAnnotations(Anno.auto(instr.code, instr.location));
-                    Global.context.addAnnotation(';\n', instr.location);
-                } else {
-                    Global.context.printLine(Global.context.identfy() + instr.code + ';', instr.location);
-                }
+                Global.context.printLine(Global.context.identfy() + instr.code + ';', instr.location);
             }
         }
     };
@@ -131,6 +132,7 @@
         this.label = null;
         this.cond = null;
         this.customflow = null;
+        this.variables = [];
         this.xrefs = data.xrefs ? data.xrefs.slice() : [];
         this.refs = data.refs ? data.refs.slice() : [];
         this.comments = data.comment ? [new TextDecoder().decode(Duktape.dec('base64', data.comment))] : [];
@@ -193,10 +195,10 @@
             _asm_view(this);
         };
         this.ascomment = function() {
-            _asm_r2_view(this, false);
+            _asm_rizin_view(this, false);
         };
         this.ascodeline = function() {
-            _asm_r2_view(this, true);
+            _asm_rizin_view(this, true);
         };
     };
 

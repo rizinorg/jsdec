@@ -54,7 +54,7 @@ function decompile_offset(architecture, fcnname) {
         var arch_context = architecture.context(data);
         libdec.core.analysis.pre(p, architecture, arch_context);
         libdec.core.decompile(p, architecture, arch_context);
-        libdec.core.analysis.post(p, architecture, arch_context);
+        libdec.core.analysis.post(p, architecture, arch_context, data);
         libdec.core.print(p);
     } else if (Global.evars.extra.allfunctions) {
         Global.context.printLog('Error: Please analyze the ' + fcnname + ' first.', true);

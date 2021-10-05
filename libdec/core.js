@@ -49,8 +49,9 @@
      * @param  {Object} session      - Current session object.
      * @param  {Object} arch         - Current architecture object
      * @param  {Object} arch_context - Current architecture context object.
+     * @param  {Object} data         - Data object retrieved from rizin.
      */
-    var _post_analysis = function(session, arch, arch_context) {
+    var _post_analysis = function(session, arch, arch_context, data) {
         ControlFlow(session);
         if (arch.postanalisys) {
             arch.postanalisys(session.instructions, arch_context);
@@ -67,6 +68,17 @@
             locals: arch.localvars(arch_context) || [],
             globals: arch.globalvars(arch_context) || []
         });
+
+        var ivars =  Array.prototype.concat(data.xrefs.arguments.bp, data.xrefs.arguments.sp, data.xrefs.arguments.reg);
+        ivars.sort(function(x, y) {
+            if (x.name < y.name) {
+                return -1;
+            }
+            return x.name > y.name ? 1 : 0;
+        });
+        for (var i = session.instructions.length - 1; i >= 0; i--) {
+            session.instructions[i].variables = ivars;
+        }
         session.routine = routine;
     };
 
