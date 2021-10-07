@@ -69,16 +69,6 @@
         }
     }
 
-    function _contains_offset(a) {
-        a = a.filter(function(x) { return x.type == "offset"; });
-        return a.length > 0;
-    }
-
-    function _get_first_offset(a) {
-        a = a.filter(function(x) { return x.type == "offset"; });
-        return a[0].start;
-    }
-
     return {
         context: function() {
             var data = new rzutil.data(false);
@@ -101,17 +91,15 @@
                 it, tmp, ll = line.str.length;
             var string_beg = ll,
                 string_end = -1;
+            a.push(new Annotation(current, ll, null, line.offset, "offset"));
             if (line.str.trim().startsWith('/*') || context.comment) {
                 context.comment = !line.str.endsWith('*/');
-                a.push(new Annotation(current, ll, null, line.offset, "offset"));
                 a.push(new Annotation(current, ll, line.str, null, "syntax_highlight", "comment"));
                 return a;
             } else if (line.str.startsWith('//')) {
-                a.push(new Annotation(current, ll, null, line.offset, "offset"));
                 a.push(new Annotation(current, ll, line.str, null, "syntax_highlight", "comment"));
                 return a;
             } else if (line.str.startsWith('#')) {
-                a.push(new Annotation(current, ll, null, line.offset, "offset"));
                 a.push(new Annotation(current, ll, line.str, null, "syntax_highlight", "comment"));
                 return a;
             }
@@ -122,9 +110,8 @@
                 pos = line.str.indexOf(str);
                 if (pos > 0) {
                     // include the ""
-                    a.push(new Annotation(current + pos, str.length, null, it.location, "offset", null));
-                    a.push(new Annotation(current + pos, str.length, str, it.location, "constant_variable", null));
-                    a.push(new Annotation(current + pos, str.length, str, null, "syntax_highlight", "constant_variable"));
+                    a.push(new Annotation(current + pos, str.length, str, it.location, "global_variable", null));
+                    a.push(new Annotation(current + pos, str.length, str, null, "syntax_highlight", "global_variable"));
                     string_beg = pos;
                     string_end = string_beg + str.length;
                     break;
@@ -135,7 +122,7 @@
                 tmp = line.str.match(_re_string) || [];
                 for (i = tmp.length - 1, old = 0; i >= 0; i--) {
                     pos = line.str.indexOf(tmp[i]);
-                    a.push(new Annotation(current + pos, tmp[i].length, tmp[i], null, "syntax_highlight", "constant_variable"));
+                    a.push(new Annotation(current + pos, tmp[i].length, tmp[i], null, "syntax_highlight", "global_variable"));
                     string_beg = pos;
                     string_end = pos + tmp[i].length;
                     tmp = line.str.substr(string_end, 0);
@@ -148,7 +135,6 @@
                 if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
                     var callname = line.str.substr(pos, line.str.substr(pos).indexOf('(')).trim();
                     if (['__asm'].indexOf(callname) < 0) {
-                        a.push(new Annotation(current, pos, null, line.offset, "offset"));
                         a.push(new Annotation(current + pos, callname.length, callname, null, "syntax_highlight", "function_name"));
                     }
                 }
@@ -157,9 +143,6 @@
                     it = context.functions[i];
                     pos = line.str.search(new RegExp('\\b' + it.value + '\\b'));
                     if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
-                        var call = line.str.substr(pos, line.str.indexOf(')'));
-                        a.push(new Annotation(current, pos, null, line.offset, "offset"));
-                        a.push(new Annotation(current + pos, call.length, null, it.location, "offset", null));
                         a.push(new Annotation(current + pos, it.value.length, it.name, it.location, "function_name", null));
                         a.push(new Annotation(current + pos, it.value.length, it.value, null, "syntax_highlight", "function_name"));
                         break;
@@ -199,10 +182,7 @@
                 }
                 if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
                     var location = Long.fromString(match);
-                    if (a.length < 1 && pos > 0) {
-                        a.push(new Annotation(current, pos, null, line.offset, "offset"));
-                    }
-                    a.push(new Annotation(current + pos, match.length, null, location, "offset"));
+                    a.push(new Annotation(current + pos, match.length, match, location, "constant_variable", null));
                     a.push(new Annotation(current + pos, match.length, match, null, "syntax_highlight", "constant_variable"));
                 }
             });
@@ -212,15 +192,6 @@
                     a.push(new Annotation(current + pos, match.length, match, null, "syntax_highlight", "datatype"));
                 }
             });
-            a.sort(_sort_by_start);
-            if (!_contains_offset(a)) {
-                a.push(new Annotation(current, ll, null, line.offset, "offset"));
-            } else {
-                pos = _get_first_offset(a);
-                if (pos > current) {
-                    a.push(new Annotation(current, pos - current, null, line.offset, "offset"));
-                }
-            }
             return a.sort(_sort_by_start);
         }
     };
