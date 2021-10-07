@@ -111,6 +111,7 @@
      * @param  {Object} session - Current session object.
      */
     var _print = function(session) {
+        var lineoff = session.instructions.length > 0 ? session.instructions[0].location : null;
         if (!session.routine) {
             Global.context.printLog('Error: no "good" data given (all invalid opcodes).', true);
             return;
@@ -129,18 +130,19 @@
             var asm_header = Global.evars.honor.offsets ? '' : '; assembly';
             var details = '/* ' + Global.evars.extra.file + ' @ 0x' + Global.evars.extra.offset.toString(16) + ' */';
             
-            Global.context.printLine(Global.context.identfy(asm_header.length, t.comment(asm_header)) + t.comment('/* jsdec pseudo code output */'));
-            Global.context.printLine(Global.context.identfy() + t.comment(details));
+            Global.context.printLine(Global.context.identfy(asm_header.length, t.comment(asm_header)) + t.comment('/* jsdec pseudo code output */'), lineoff);
+            Global.context.printLine(Global.context.identfy() + t.comment(details), lineoff);
             if (['java', 'dalvik'].indexOf(Global.evars.arch) < 0) {
-                Global.context.printMacros();
-                Global.context.printDependencies();
+                Global.context.printMacros(lineoff);
+                Global.context.printDependencies(lineoff);
             }
         }
         session.print();
+        lineoff = session.instructions.length > 0 ? session.instructions[session.instructions.length - 1].location : null;
         while (Global.context.ident.length > 0) {
             Global.context.identOut();
             var value = Global.context.identfy() + '}';
-            Global.context.printLine(value);
+            Global.context.printLine(value, lineoff);
         }
     };
 

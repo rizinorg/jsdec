@@ -146,7 +146,7 @@
             var t = Global.printer.theme;
             var empty = Global.context.identfy();
             if (this.comments.length == 1) {
-                Global.context.printLine(empty + t.comment('/* ' + this.comments[0] + ' */', this.location));
+                Global.context.printLine(empty + t.comment('/* ' + this.comments[0] + ' */'), this.location);
             } else if (this.comments.length > 1) {
                 Global.context.printLine(empty + t.comment('/* ' + this.comments[0]), this.location);
                 for (var i = 1; i < this.comments.length; i++) {

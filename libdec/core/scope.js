@@ -38,7 +38,7 @@
             var t = Global.printer.theme;
             var ident = Global.context.identfy();
             var addr = block.address.toString(16);
-            Global.context.printLine(ident + t.comment('/* address 0x' + addr + ' */'));
+            Global.context.printLine(ident + t.comment('/* address 0x' + addr + ' */'), block.address);
         }
     }
 
@@ -118,7 +118,7 @@
             this.print = function() {
                 Global.context.identOut();
                 var offset = Global.evars.honor.offsets ? Extra.align_address(this.address) : '';
-                Global.context.printLine(Global.context.identfy(offset.length, Global.printer.theme.integers(offset)) + this.toString());
+                Global.context.printLine(Global.context.identfy(offset.length, Global.printer.theme.integers(offset)) + this.toString(), this.address);
                 Global.context.identIn();
                 _print_block_data(this);
                 _print_locals(this.locals, this.address);

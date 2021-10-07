@@ -87,25 +87,25 @@ function jsdec_main(args) { // lgtm [js/unused-local-variable]
 
         if (architecture) {
             Global.context = new libdec.context();
+            var current = rzpipe.long('s');
             if (Global.evars.extra.allfunctions) {
-                var current = rzpipe.string('s');
                 var functions = rzpipe.json64('aflj');
                 functions.forEach(function(x) {
                     if (x.name.startsWith('sym.imp.') || x.name.startsWith('loc.imp.')) {
                         return;
                     }
                     rzpipe.string('s 0x' + x.offset.toString(16));
-                    Global.context.printLine("");
-                    Global.context.printLine(Global.printer.theme.comment('/* name: ' + x.name + ' @ 0x' + x.offset.toString(16) + ' */'));
+                    Global.context.printLine("", x.offset);
+                    Global.context.printLine(Global.printer.theme.comment('/* name: ' + x.name + ' @ 0x' + x.offset.toString(16) + ' */'), x.offset);
                     decompile_offset(architecture, x.name);
                 });
-                rzpipe.string('s ' + current);
+                rzpipe.string('s 0x' + current.toString(16));
                 var o = Global.context;
                 Global.context = new libdec.context();
                 Global.context.macros = o.macros;
                 Global.context.dependencies = o.dependencies;
-                Global.context.printLine(Global.printer.theme.comment('/* jsdec pseudo code output */'));
-                Global.context.printLine(Global.printer.theme.comment('/* ' + Global.evars.extra.file + ' */'));
+                Global.context.printLine(Global.printer.theme.comment('/* jsdec pseudo code output */'), current);
+                Global.context.printLine(Global.printer.theme.comment('/* ' + Global.evars.extra.file + ' */'), current);
                 if (['java', 'dalvik'].indexOf(Global.evars.arch) < 0) {
                     Global.context.printMacros(true);
                     Global.context.printDependencies(true);

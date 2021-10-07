@@ -37,7 +37,7 @@
                     mident + 'count &= mask;',
                     mident + 'return (value << count) | (value >> (-count & mask));'
                 ];
-                this.print = function() {
+                this.print = function(offset) {
                     if (_unique_print.rotate_left.indexOf(this.bits) >= 0) {
                         return;
                     }
@@ -50,11 +50,11 @@
                     args = args[0] + ' ' + args[1] + ', ' + args[2] + ' ' + args[3];
                     var a = Global.printer.auto;
                     var t = Global.printer.theme;
-                    Global.context.printLine(Global.context.identfy() + t.types(type) + ' ' + t.callname(call) + ' (' + args + ') {');
+                    Global.context.printLine(Global.context.identfy() + t.types(type) + ' ' + t.callname(call) + ' (' + args + ') {', offset);
                     for (i = 0; i < this.data.length; i++) {
-                        Global.context.printLine(Global.context.identfy() + a(this.data[i].replace(/###/g, this.bits)));
+                        Global.context.printLine(Global.context.identfy() + a(this.data[i].replace(/###/g, this.bits)), offset);
                     }
-                    Global.context.printLine(Global.context.identfy() + '}');
+                    Global.context.printLine(Global.context.identfy() + '}', offset);
                 };
             }
         },
@@ -70,7 +70,7 @@
                     mident + 'count &= mask;',
                     mident + 'return (value >> count) | (value << (-count & mask));'
                 ];
-                this.print = function() {
+                this.print = function(offset) {
                     if (_unique_print.rotate_right.indexOf(this.bits) >= 0) {
                         return;
                     }
@@ -83,11 +83,11 @@
                     var a = Global.printer.auto;
                     var t = Global.printer.theme;
                     args = args[0] + ' ' + args[1] + ', ' + args[2] + ' ' + args[3];
-                    Global.context.printLine(Global.context.identfy() + t.types(type) + ' ' + t.callname(call) + ' (' + args + ') {');
+                    Global.context.printLine(Global.context.identfy() + t.types(type) + ' ' + t.callname(call) + ' (' + args + ') {', offset);
                     for (i = 0; i < this.data.length; i++) {
-                        Global.context.printLine(Global.context.identfy() + a(this.data[i].replace(/###/g, this.bits)));
+                        Global.context.printLine(Global.context.identfy() + a(this.data[i].replace(/###/g, this.bits)), offset);
                     }
-                    Global.context.printLine(Global.context.identfy() + '}');
+                    Global.context.printLine(Global.context.identfy() + '}', offset);
                 };
             }
         },
@@ -97,13 +97,13 @@
             ],
             fcn: function() {
                 this.mask = '#define BIT_MASK(t,v) ((t)(-((v)!= 0)))&(((t)-1)>>((sizeof(t)*CHAR_BIT)-(v)))';
-                this.print = function() {
+                this.print = function(offset) {
                     if (_unique_print.bit_mask) {
                         return;
                     }
                     _unique_print.bit_mask = true;
                     var t = Global.printer.theme;
-                    Global.context.printLine(Global.context.identfy() + t.macro(this.mask));
+                    Global.context.printLine(Global.context.identfy() + t.macro(this.mask), offset);
                 };
             }
         },
@@ -131,14 +131,14 @@
                     this.data.push('                                 ((val & 0x00ff000000000000ull) >> 40) | \\');
                     this.data.push('                                 ((val & 0xff00000000000000ull) >> 56)))');
                 }
-                this.print = function() {
+                this.print = function(offset) {
                     if (_unique_print.swap_endian.indexOf(this.bits) >= 0) {
                         return;
                     }
                     _unique_print.swap_endian.push(this.bits);
                     var t = Global.printer.theme;
                     for (var i = 0; i < this.data.length; i++) {
-                        Global.context.printLine(Global.context.identfy() + t.macro(this.data[i]));
+                        Global.context.printLine(Global.context.identfy() + t.macro(this.data[i]), offset);
                     }
                 };
             }

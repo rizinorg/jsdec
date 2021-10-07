@@ -67,14 +67,14 @@
         /**
          * prints all the macros. used internally by core.js
          */
-        this.printMacros = function() {
+        this.printMacros = function(offset) {
             if (!Global.evars.honor.blocks) {
                 var t = Global.printer.theme;
                 for (var i = 0; i < this.macros.length; i++) {
-                    this.printLine(this.identfy() + t.macro(this.macros[i]));
+                    this.printLine(this.identfy() + t.macro(this.macros[i]), offset);
                 }
             }
-            this.printLine(this.identfy() + ' ');
+            this.printLine(this.identfy() + ' ', offset);
         };
 
         /**
@@ -97,16 +97,16 @@
         /**
          * prints all the dependencies. used internally by core.js
          */
-        this.printDependencies = function() {
+        this.printDependencies = function(offset) {
             if (Global.evars.honor.blocks) {
                 return;
             }
 
             this.dependencies.forEach(function(x) {
-                x.print();
+                x.print(offset);
             });
             if (this.dependencies.length > 0) {
-                this.printLine(this.identfy() + ' ');
+                this.printLine(this.identfy() + ' ', offset);
             }
         };
 
