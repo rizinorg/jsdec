@@ -129,7 +129,7 @@
     function print_archs() {
         var libdec = require('libdec/libdec');
         var archs = Object.keys(libdec.archs);
-        archs.sort()
+        archs.sort();
         console.log('Supported architectures: ' + archs.join(', '));
     }
 
