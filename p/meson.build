@@ -26,6 +26,8 @@ if rizin_plugdir == '' and rizin.found()
   endif
 endif
 
+plugin_jsdec_dir = join_paths(rizin_plugdir, 'jsdec')
+
 libs = ['rz_core', 'rz_util', 'rz_cons', 'rz_config', 'rz_io']
 foreach lib : libs
   deps += cc.find_library(lib, dirs: rizin_libdir)
@@ -46,8 +48,9 @@ files = [
   'duktape/duk_console.c'
 ]
 
-jsc_folder = get_option('jsc_folder')
+c_args += ('-DJSDEC_HOME="' + plugin_jsdec_dir + '"')
 
+jsc_folder = get_option('jsc_folder')
 if jsc_folder != ''
   c_args += '-DUSE_JSC'
   generator_jsc = files('make_jsc.py')
@@ -81,9 +84,8 @@ shared_library('core_pdd', files,
 )
 
 if jsc_folder == ''
-  dst = join_paths(get_option('datadir'), 'jsdec')
-  install_subdir(join_paths('..', 'libdec'), install_dir: dst)
-  install_subdir(join_paths('..', 'themes'), install_dir: dst)
-  install_data(join_paths('..', 'jsdec-duk.js'), install_dir: dst)
-  install_data(join_paths('..', 'require.js'), install_dir: dst)
+  install_subdir(join_paths('..', 'libdec'), install_dir: plugin_jsdec_dir)
+  install_subdir(join_paths('..', 'themes'), install_dir: plugin_jsdec_dir)
+  install_data(join_paths('..', 'jsdec-duk.js'), install_dir: plugin_jsdec_dir)
+  install_data(join_paths('..', 'require.js'), install_dir: plugin_jsdec_dir)
 endif
