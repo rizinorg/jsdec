@@ -168,11 +168,17 @@ JsDecCtx *jsdec_ctx_get(duk_context *ctx) {
 static void eval_file(duk_context *ctx, const char *file) {
 	//fprintf (stderr, "REQUIRE: %s\n", file);
 	//fflush (stderr);
-	char *text = jsdec_read_file(file);
-	if (text) {
+#ifdef USE_JSC
+	const char *js = jsdec_jsc(file);
+#else
+	char *js = jsdec_read_file(file);
+#endif
+	if (js) {
 		duk_push_lstring(ctx, file, strlen(file));
-		duk_eval_file_noresult(ctx, text);
-		free(text);
+		duk_eval_file_noresult(ctx, js);
+#ifndef USE_JSC
+		free(js);
+#endif
 	}
 }
 
