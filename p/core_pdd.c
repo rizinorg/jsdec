@@ -17,27 +17,27 @@
 #undef RZ_API
 #define RZ_API static
 #undef RZ_IPI
-#define RZ_IPI static
-#define SETDESC(x,y) rz_config_node_desc (x,y)
-#define SETPREF(x,y,z) SETDESC (rz_config_set (cfg,x,y), z)
+#define RZ_IPI           static
+#define SETDESC(x, y)    rz_config_node_desc(x, y)
+#define SETPREF(x, y, z) SETDESC(rz_config_set(cfg, x, y), z)
 
 /* for compatibility. */
 #ifndef RZ_HOME_DATADIR
 #define RZ_HOME_DATADIR RZ_HOMEDIR
 #endif
 
-#define name_args(name) (internal_ ## name ## _args)
-#define name_help(name) (internal_ ## name ## _help)
-#define name_handler(name) (internal_ ## name ## _handler)
+#define name_args(name)    (internal_##name##_args)
+#define name_help(name)    (internal_##name##_help)
+#define name_handler(name) (internal_##name##_handler)
 #define command_handler(name, command) \
-	RZ_IPI RzCmdStatus name_handler(name)(RzCore *core, int argc, const char **argv) { \
+	RZ_IPI RzCmdStatus name_handler(name)(RzCore * core, int argc, const char **argv) { \
 		if (argc != 1) { \
 			return RZ_CMD_STATUS_WRONG_ARGS; \
 		} \
-		duk_jsdec (core, command); \
+		duk_jsdec(core, command); \
 		return RZ_CMD_STATUS_OK; \
 	}
-#define static_description_no_args(command,description) \
+#define static_description_no_args(command, description) \
 	static const RzCmdDescArg name_args(command)[] = { \
 		{ 0 }, \
 	}; \
@@ -45,23 +45,26 @@
 		.summary = description, \
 		.args = name_args(command), \
 	}
-#define rz_cmd_desc_argv_new_warn(rcmd,root,cmd) \
-	rz_warn_if_fail(rz_cmd_desc_argv_new(rcmd,root,#cmd,name_handler(cmd),&name_help(cmd)))
+#define rz_cmd_desc_argv_new_warn(rcmd, root, cmd) \
+	rz_warn_if_fail(rz_cmd_desc_argv_new(rcmd, root, #cmd, name_handler(cmd), &name_help(cmd)))
 
+#ifdef USE_JSC
+#include "jsdec_jsc.c"
+#endif
 
-static char* jsdec_read_file(const char* file) {
+static char *jsdec_read_file(const char *file) {
 	if (!file) {
 		return 0;
 	}
 	char *homedir;
-	char *env = rz_sys_getenv ("JSDEC_HOME");
+	char *env = rz_sys_getenv("JSDEC_HOME");
 	if (env) {
 		homedir = env;
 	} else {
 #ifdef JSDEC_HOME
-		homedir = rz_str_new (JSDEC_HOME);
+		homedir = rz_str_new(JSDEC_HOME);
 #else
-		homedir = rz_str_home (RZ_HOME_DATADIR RZ_SYS_DIR
+		homedir = rz_str_home(RZ_HOME_DATADIR RZ_SYS_DIR
 			"rzpm" RZ_SYS_DIR "git" RZ_SYS_DIR "jsdec");
 #endif
 	}
@@ -69,86 +72,90 @@ static char* jsdec_read_file(const char* file) {
 	if (!homedir) {
 		return 0;
 	}
-	char *filepath = rz_str_newf ("%s"RZ_SYS_DIR"%s", homedir, file);
-	free (homedir);
-	char* text = rz_file_slurp (filepath, &len);
+	char *filepath = rz_str_newf("%s" RZ_SYS_DIR "%s", homedir, file);
+	free(homedir);
+	char *text = rz_file_slurp(filepath, &len);
 	if (text && len > 0) {
-		free (filepath);
+		free(filepath);
 		return text;
 	}
-	free (filepath);
+	free(filepath);
 	return 0;
 }
 
 static duk_ret_t duk_rzcmd(duk_context *ctx) {
-	if (duk_is_string (ctx, 0)) {
-		const char* command = duk_safe_to_string (ctx, 0);
-	    //fprintf (stderr, "RZCMD: %s\n", command);
-	    //fflush (stderr);
-		JsDecCtx *jsdec_ctx = jsdec_ctx_get (ctx);
-		rz_cons_sleep_end (jsdec_ctx->bed);
-		char* output = rz_core_cmd_str (jsdec_ctx->core, command);
-		jsdec_ctx->bed = rz_cons_sleep_begin ();
-		duk_push_string (ctx, output);
-		free (output);
+	if (duk_is_string(ctx, 0)) {
+		const char *command = duk_safe_to_string(ctx, 0);
+		//fprintf (stderr, "RZCMD: %s\n", command);
+		//fflush (stderr);
+		JsDecCtx *jsdec_ctx = jsdec_ctx_get(ctx);
+		rz_cons_sleep_end(jsdec_ctx->bed);
+		char *output = rz_core_cmd_str(jsdec_ctx->core, command);
+		jsdec_ctx->bed = rz_cons_sleep_begin();
+		duk_push_string(ctx, output);
+		free(output);
 		return 1;
 	}
 	return DUK_RET_TYPE_ERROR;
 }
 
 static duk_ret_t duk_internal_load(duk_context *ctx) {
-	if (duk_is_string (ctx, 0)) {
-		const char* fullname = duk_safe_to_string (ctx, 0);
-		char* text = jsdec_read_file (fullname);
-		if (text) {
-			duk_push_string (ctx, text);
-			free (text);
-		} else {
-			printf("Error: '%s' not found.\n", fullname);
-			return DUK_RET_TYPE_ERROR;
-		}
-		return 1;
+	if (!duk_is_string(ctx, 0)) {
+		return DUK_RET_TYPE_ERROR;
 	}
-	return DUK_RET_TYPE_ERROR;
+	const char *fullname = duk_safe_to_string(ctx, 0);
+	char *text = jsdec_read_file(fullname);
+	if (!text) {
+		printf("Error: '%s' not found.\n", fullname);
+		return DUK_RET_TYPE_ERROR;
+	}
+	duk_push_string(ctx, text);
+	free(text);
+	return 1;
 }
 
 static duk_ret_t duk_internal_require(duk_context *ctx) {
 	char fullname[256];
-	if (duk_is_string (ctx, 0)) {
-		snprintf (fullname, sizeof(fullname), "%s.js", duk_safe_to_string (ctx, 0));
-		char* text = jsdec_read_file (fullname);
-		if (text) {
-			duk_push_lstring (ctx, fullname, strlen (fullname));
-			duk_eval_file (ctx, text);
-			free (text);
-		} else {
-			printf("Error: '%s' not found.\n", fullname);
-			return DUK_RET_TYPE_ERROR;
-		}
-		return 1;
+	if (!duk_is_string(ctx, 0)) {
+		return DUK_RET_TYPE_ERROR;
 	}
-	return DUK_RET_TYPE_ERROR;
+	snprintf(fullname, sizeof(fullname), "%s.js", duk_safe_to_string(ctx, 0));
+#ifdef USE_JSC
+	const char *js = jsdec_jsc(fullname);
+#else
+	char *js = jsdec_read_file(fullname);
+#endif
+	if (!js) {
+		printf("Error: '%s' not found.\n", fullname);
+		return DUK_RET_TYPE_ERROR;
+	}
+	duk_push_lstring(ctx, fullname, strlen(fullname));
+	duk_eval_file(ctx, js);
+#ifndef USE_JSC
+	free(js);
+#endif
+	return 1;
 }
 
-static void duk_jsdec_init(duk_context* ctx, JsDecCtx *jsdec_ctx) {
-	duk_push_global_stash (ctx);
-	duk_push_pointer (ctx, (void *)jsdec_ctx);
-	duk_put_prop_string (ctx, -2, "jsdec_ctx");
-	duk_pop (ctx);
+static void duk_jsdec_init(duk_context *ctx, JsDecCtx *jsdec_ctx) {
+	duk_push_global_stash(ctx);
+	duk_push_pointer(ctx, (void *)jsdec_ctx);
+	duk_put_prop_string(ctx, -2, "jsdec_ctx");
+	duk_pop(ctx);
 
-	duk_push_c_function (ctx, duk_internal_require, 1);
-	duk_put_global_string (ctx, "___internal_require");
-	duk_push_c_function (ctx, duk_internal_load, 1);
-	duk_put_global_string (ctx, "___internal_load");
-	duk_push_c_function (ctx, duk_rzcmd, 1);
-	duk_put_global_string (ctx, "rzcmd");
+	duk_push_c_function(ctx, duk_internal_require, 1);
+	duk_put_global_string(ctx, "___internal_require");
+	duk_push_c_function(ctx, duk_internal_load, 1);
+	duk_put_global_string(ctx, "___internal_load");
+	duk_push_c_function(ctx, duk_rzcmd, 1);
+	duk_put_global_string(ctx, "rzcmd");
 }
 
 JsDecCtx *jsdec_ctx_get(duk_context *ctx) {
-	duk_push_global_stash (ctx);
-	duk_get_prop_string (ctx, -1, "jsdec_ctx");
-	JsDecCtx *r = duk_require_pointer (ctx, -1);
-	duk_pop_2 (ctx);
+	duk_push_global_stash(ctx);
+	duk_get_prop_string(ctx, -1, "jsdec_ctx");
+	JsDecCtx *r = duk_require_pointer(ctx, -1);
+	duk_pop_2(ctx);
 	return r;
 }
 
@@ -158,62 +165,63 @@ JsDecCtx *jsdec_ctx_get(duk_context *ctx) {
 //	duk_pop(ctx);
 //}
 
-static void eval_file(duk_context* ctx, const char* file) {
-    //fprintf (stderr, "REQUIRE: %s\n", file);
-    //fflush (stderr);
-	char* text = jsdec_read_file (file);
+static void eval_file(duk_context *ctx, const char *file) {
+	//fprintf (stderr, "REQUIRE: %s\n", file);
+	//fflush (stderr);
+	char *text = jsdec_read_file(file);
 	if (text) {
-		duk_push_lstring (ctx, file, strlen (file));
-		duk_eval_file_noresult (ctx, text);
-		free (text);
+		duk_push_lstring(ctx, file, strlen(file));
+		duk_eval_file_noresult(ctx, text);
+		free(text);
 	}
 }
 
-static void jsdec_fatal_function (void *udata, const char *msg) {
-    fprintf (stderr, "*** FATAL ERROR: %s\n", (msg ? msg : "no message"));
-    fflush (stderr);
-    abort ();
+static void jsdec_fatal_function(void *udata, const char *msg) {
+	fprintf(stderr, "*** FATAL ERROR: %s\n", (msg ? msg : "no message"));
+	fflush(stderr);
+	abort();
 }
 
 static void duk_jsdec(RzCore *core, const char *input) {
-	char args[1024] = {0};
+	char args[1024] = { 0 };
 	JsDecCtx jsdec_ctx;
 	jsdec_ctx.core = core;
-	jsdec_ctx.bed = rz_cons_sleep_begin ();
-	duk_context *ctx = duk_create_heap (0, 0, 0, 0, jsdec_fatal_function);
-	duk_console_init (ctx, 0);
-//	Long_init (ctx);
-	duk_jsdec_init (ctx, &jsdec_ctx);
-	eval_file (ctx, "require.js");
-	eval_file (ctx, "jsdec-duk.js");
+	jsdec_ctx.bed = rz_cons_sleep_begin();
+	duk_context *ctx = duk_create_heap(0, 0, 0, 0, jsdec_fatal_function);
+	duk_console_init(ctx, 0);
+	//	Long_init (ctx);
+	duk_jsdec_init(ctx, &jsdec_ctx);
+	eval_file(ctx, "require.js");
+	eval_file(ctx, "jsdec-duk.js");
 	if (*input) {
-		snprintf (args, sizeof(args), "try{if(typeof jsdec_main == 'function'){jsdec_main(\"%s\".split(/\\s+/));}else{console.log('Fatal error. Cannot use RZ_HOME_DATADIR or JSDEC_HOME.');}}catch(_____e){console.log(_____e.stack||_____e);}", input);
+		snprintf(args, sizeof(args), "try{if(typeof jsdec_main == 'function'){jsdec_main(\"%s\".split(/\\s+/));}else{console.log('Fatal error. Cannot use RZ_HOME_DATADIR or JSDEC_HOME.');}}catch(_____e){console.log(_____e.stack||_____e);}", input);
 	} else {
-		snprintf (args, sizeof(args), "try{if(typeof jsdec_main == 'function'){jsdec_main([]);}else{console.log('Fatal error. Cannot use RZ_HOME_DATADIR or JSDEC_HOME.');}}catch(_____e){console.log(_____e.stack||_____e);}");
+		snprintf(args, sizeof(args), "try{if(typeof jsdec_main == 'function'){jsdec_main([]);}else{console.log('Fatal error. Cannot use RZ_HOME_DATADIR or JSDEC_HOME.');}}catch(_____e){console.log(_____e.stack||_____e);}");
 	}
-	duk_eval_string_noresult (ctx, args);
+	duk_eval_string_noresult(ctx, args);
 	//duk_rizin_debug_stack(ctx);
-	duk_destroy_heap (ctx);
+	duk_destroy_heap(ctx);
 	rz_cons_sleep_end(jsdec_ctx.bed);
 }
-
 
 static const RzCmdDescHelp pdd_usage = {
 	.summary = "Core plugin for jsdec",
 };
 
 //static_description_no_args(cmd_pdd_star,"decompiled code is returned to rizin as comment (via CCu)");
-static_description_no_args(pdd,"decompile current function");
-static_description_no_args(pddc,"decompiled code is returned to rizin as 'file:line code' (via CL)");
-static_description_no_args(pdda,"decompile current function with side assembly");
-static_description_no_args(pddb,"decompile current function but show only scopes");
-static_description_no_args(pddo,"decompile current function side by side with offsets");
-static_description_no_args(pddj,"decompile current function as json");
-static_description_no_args(pddA,"decompile current function with annotation output");
-static_description_no_args(pddf,"decompile all functions");
-static_description_no_args(pddi,"generate issue data");
+static_description_no_args(pdd, "decompile current function");
+static_description_no_args(pddt, "lists the supported architectures");
+static_description_no_args(pddc, "decompiled code is returned to rizin as 'file:line code' (via CL)");
+static_description_no_args(pdda, "decompile current function with side assembly");
+static_description_no_args(pddb, "decompile current function but show only scopes");
+static_description_no_args(pddo, "decompile current function side by side with offsets");
+static_description_no_args(pddj, "decompile current function as json");
+static_description_no_args(pddA, "decompile current function with annotation output");
+static_description_no_args(pddf, "decompile all functions");
+static_description_no_args(pddi, "generate issue data");
 
 command_handler(pdd, "");
+command_handler(pddt, "--architectures");
 command_handler(pdda, "--assembly");
 command_handler(pddA, "--annotation");
 command_handler(pddb, "--blocks");
@@ -232,7 +240,7 @@ static bool rz_cmd_pdd_init(RzCore *core) {
 		return false;
 	}
 
-	rz_config_lock (cfg, false);
+	rz_config_lock(cfg, false);
 	SETPREF("jsdec.asm", "false", "if true, shows pseudo next to the assembly.");
 	SETPREF("jsdec.blocks", "false", "if true, shows only scopes blocks.");
 	SETPREF("jsdec.casts", "false", "if false, hides all casts in the pseudo code.");
@@ -242,8 +250,7 @@ static bool rz_cmd_pdd_init(RzCore *core) {
 	SETPREF("jsdec.slow", "false", "load all the data before to avoid multirequests to rizin.");
 	SETPREF("jsdec.theme", "default", "defines the color theme to be used on jsdec.");
 	SETPREF("jsdec.xrefs", "false", "if true, shows all xrefs in the pseudo code.");
-	rz_config_lock (cfg, true);
-
+	rz_config_lock(cfg, true);
 
 	RzCmdDesc *pdd = rz_cmd_desc_group_new(rcmd, root_cd, "pdd", name_handler(pdd), &name_help(pdd), &pdd_usage);
 	if (!pdd) {
@@ -251,6 +258,7 @@ static bool rz_cmd_pdd_init(RzCore *core) {
 		return false;
 	}
 
+	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddt);
 	rz_cmd_desc_argv_new_warn(rcmd, pdd, pdda);
 	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddA);
 	rz_cmd_desc_argv_new_warn(rcmd, pdd, pddb);

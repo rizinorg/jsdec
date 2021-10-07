@@ -13,21 +13,11 @@ Requires [rizin](https://github.com/rizinorg/rizin).
 
 # Install
 
-Follow the following steps to install jsdec via rzpm
-
-### *nix users (Linux/OSX/etc..):
-
-    rz-pm init
-    rz-pm install jsdec
-
-### Windows users only:
-
- - clone
- - For cygwin or msys2
-    - run `make -C p` from inside the `jsdec` folder
- - For everything else
-    - Build via meson.
- - Set `JSDEC_HOME` env variable or copy whole jsdec dir to `%RZ_RDATAHOME%\rzpm\git\` where `%RZ_RDATAHOME%` is path returned by `rizin.exe -H RZ_RDATAHOME`.
+Follow the following steps to install jsdec
+ - clone this repository
+ - Run `cd p`
+ - Run `meson -Djsc_folder=".." build` to create the build folder
+ - Run `ninja -C build install` to build the shared library and to install it 
 
 # Usage
 
