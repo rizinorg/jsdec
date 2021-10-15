@@ -69,6 +69,7 @@
      * @returns {boolean}
      */
     var _is_stack_reg = function(name) {
+        name = name.replace(/([re]?sp).+/, "$1");
         return name && _REGEX_STACK_REG.test(name);
     };
 
@@ -945,7 +946,7 @@
 
             // every non-import callee has a known number of arguments
             // for imported libc functions, get the number of arguments out of a predefined list
-            nargs = callee.name.startsWith('sym.') || callname.startsWith('reloc.') ?
+            nargs = callee.name.startsWith('sym.') || callname.startsWith('reloc.') || callname.startsWith('sub.') ?
                 Extra.find.arguments_number(callee.name) :
                 callee.nargs;
 
