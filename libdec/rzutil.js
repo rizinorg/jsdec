@@ -106,7 +106,7 @@
 
     function print_issue() {
         var xrefs = rz_sanitize(rzpipe.string('isj'), '[]');
-        var strings = rz_sanitize(rzpipe.string('Csj'), '[]');
+        var strings = rz_sanitize(rzpipe.string('Cslj'), '[]');
         var functions = rz_sanitize(rzpipe.string('aflj'), '[]');
         var classes = rz_sanitize(rzpipe.string('icj'), '[]');
         var data = rz_sanitize(rzpipe.string('agj'), '[]');
@@ -298,7 +298,7 @@
             this.bits = rzpipe.int('e asm.bits', 32);
             this.xrefs = {
                 symbols: (isfast ? [] : rzpipe.json64('isj', [])),
-                strings: (isfast ? [] : rzpipe.json64('Csj', [])),
+                strings: (isfast ? [] : rzpipe.json64('Cslj', [])),
                 functions: (isfast ? [] : rzpipe.json64('aflj', [])),
                 classes: rzpipe.json64('icj', []),
                 arguments: offset_long(rzpipe.json64('afvj', {

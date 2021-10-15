@@ -60,6 +60,7 @@
      */
     return function(Csj, sort_by_size) {
         this.data = Csj.filter(_sanitize).map(function(x) {
+            console.log(x.string || x.name);
             return {
                 location: Global.evars.honor.paddr ? x.paddr : x.vaddr || x.offset,
                 value: (new TextDecoder().decode(Duktape.dec('base64', x.string || x.name))).replace(/\\\\/g, '\\')
@@ -68,7 +69,7 @@
         this.search = function(address) {
             if (address) {
                 if (!Global.evars.extra.slow) {
-                    var x = rzpipe.string('Cs. @ 0x' + address.toString(16));
+                    var x = rzpipe.string('Cs.q @ 0x' + address.toString(16));
                     if (x) {
                         x = x.substr(1);
                         return x.substr(0, x.length - 1);
@@ -83,7 +84,7 @@
             if (flag && flag.startsWith('str.')) {
                 if (!Global.evars.extra.slow) {
                     var address = rzpipe.string('s @ ' + flag);
-                    var x = rzpipe.string('Cs. @ ' + address.toString(16));
+                    var x = rzpipe.string('Cs.q @ ' + address.toString(16));
                     if (x) {
                         x = x.substr(1);
                         return x.substr(0, x.length - 1);
