@@ -60,7 +60,6 @@
      */
     return function(Csj, sort_by_size) {
         this.data = Csj.filter(_sanitize).map(function(x) {
-            console.log(x.string || x.name);
             return {
                 location: Global.evars.honor.paddr ? x.paddr : x.vaddr || x.offset,
                 value: (new TextDecoder().decode(Duktape.dec('base64', x.string || x.name))).replace(/\\\\/g, '\\')
