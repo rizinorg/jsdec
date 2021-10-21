@@ -69,8 +69,8 @@
      * @returns {boolean}
      */
     var _is_stack_reg = function(name) {
-        name = name.replace(/([re]?sp).+/, "$1");
-        return name && _REGEX_STACK_REG.test(name);
+        name = (name || "").replace(/([re]?sp).+/, "$1");
+        return _REGEX_STACK_REG.test(name);
     };
 
     var _is_xmm = function(op) {
@@ -619,10 +619,9 @@
                     // an irrelevant 'mov' instruction; nothing to do here
                     continue;
                 }
-
                 arg = instrs[i].string ?
                     Variable.string(instrs[i].string) :
-                    Variable[opd2.mem_access ? 'pointer' : 'local'](opd2.token, Extra.to.type(opd2.mem_access, false));
+                    Variable[opd2.mem_access ? 'pointer' : 'local'](opd2.token, Extra.to.type(opd2.mem_access || context.arch_bits, false));
 
                 instrs[i].valid = false;
                 args[offset] = arg;
@@ -636,11 +635,11 @@
                     opd2 = instrs[i - 1].parsed.opd[1];
                     arg = instrs[i - 1].string ?
                         Variable.string(instrs[i - 1].string) :
-                        Variable[opd2.mem_access ? 'pointer' : 'local'](opd2.token, Extra.to.type(opd2.mem_access, false));
+                        Variable[opd2.mem_access ? 'pointer' : 'local'](opd2.token, Extra.to.type(opd2.mem_access || context.arch_bits, false));
                 } else {
                     arg = instrs[i].string ?
                         Variable.string(instrs[i].string) :
-                        Variable[opd1.mem_access ? 'pointer' : 'local'](opd1.token, Extra.to.type(opd1.mem_access, false));
+                        Variable[opd1.mem_access ? 'pointer' : 'local'](opd1.token, Extra.to.type(opd1.mem_access || context.arch_bits, false));
                 }
                 instrs[i].valid = false;
                 args[argidx++] = arg;
@@ -707,7 +706,7 @@
                     // initialization value.
                     var arg = instrs[i].string ?
                         Variable.string(instrs[i].string) :
-                        Variable[opd2.mem_access ? 'pointer' : 'local'](argvalue, Extra.to.type(argsize, false));
+                        Variable[opd2.mem_access ? 'pointer' : 'local'](argvalue, Extra.to.type(argsize || context.arch_bits, false));
 
                     instrs[i].valid = !notseen;
                     args[argidx] = arg;
@@ -983,7 +982,7 @@
             }
         }
 
-        if (callname.startsWith('0x') || (!callname.startsWith('imp.') && !callname.startsWith('sym.imp.') && callsite.mem_access)) {
+        if (callname.startsWith('0x') || (!callname.startsWith('imp.') && !callname.startsWith('sym.imp.') && !callname.startsWith('reloc.') && callsite.mem_access)) {
             callname = Variable.functionPointer(callname, callsite.mem_access, args);
         } else if (is_pointer || (!callsite.mem_access && _x86_x64_registers.indexOf(callname) > (-1))) {
             callname = Variable.functionPointer(callname, 0, args);
@@ -2111,6 +2110,7 @@
             fwait: _nop, // wait fpu
             fxrstor: _nop, // restore x87 fpu, mmx, xmm, and mxcsr state
             fxsave: _nop, // save x87 fpu, mmx technology, and sse state
+            endbr64: _nop,
             invalid: _nop
         },
         preanalisys: function(instrs, context) {
@@ -2253,6 +2253,7 @@
                     bits: 0,
                     signed: true
                 },
+                arch_bits: data.bits,
                 vars: vars_args.filter(function(e) {
                     return (e.kind === 'var');
                 }) || [],
