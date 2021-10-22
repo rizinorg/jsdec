@@ -84,16 +84,18 @@ e scr.color         | enables syntax colors.
 # Supported Arch
 
     6502 (experimental)
-    arm 16/32/64 bit
-    avr
+    8051
+    ARM 16/32/64 bit
+    AVR
     dalvik
-    m68k (experimental)
-    mips
-    ppc 32/64 bit (VLE included)
+    m68k
+    MIPS
+    PowerPC 32/64 bit (VLE included)
+    RISC-V
+    Sparc
     superh (experimental)
-    sparc
     v850
-    wasm (experimental)
+    WebAssembly (experimental)
     x86/x64
 
 # Developing on jsdec
