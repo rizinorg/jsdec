@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
+// SPDX-License-Identifier: BSD-3-Clause
 
 const Long = require('libdec/long');
 

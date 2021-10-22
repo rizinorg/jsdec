@@ -1,18 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: Rizin
+Upstream-Name: JSDec
 Upstream-Contact: Giovanni Dante Grazioli <deroad@libero.it>
-Source: https://github.com/rizinorg/rizin
-
-Files: *.js
-Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
-Copyright: 2017-2018 pancake <pancake@nopcode.org>
-License: BSD-3-Clause
-
-Files: **/*.js
-Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
-Copyright: 2017-2018 pancake <pancake@nopcode.org>
-Copyright: 2018 elicn
-License: BSD-3-Clause
+Source: https://github.com/rizinorg/jsdec
 
 Files: .ci-scripts/*
 Copyright: 2020 Giovanni Dante Grazioli <deroad@libero.it>
@@ -38,10 +27,6 @@ Files: *.md
 Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
 
-Files: annotation_parser.py
-Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
-License: BSD-3-Clause
-
 Files: eslint-check.sh
 Copyright: 2018-2019 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
@@ -49,22 +34,6 @@ License: BSD-3-Clause
 Files: p/duktape/*
 Copyright: 2013-2019 Duktape
 License: MIT
-
-Files: p/*.c
-Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
-License: BSD-3-Clause
-
-Files: p/*.h
-Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
-License: BSD-3-Clause
-
-Files: p/*.in
-Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
-License: BSD-3-Clause
-
-Files: p/*.py
-Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
-License: BSD-3-Clause
 
 Files: p/meson.build
 Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>

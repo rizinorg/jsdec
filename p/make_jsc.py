@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 Giovanni Dante Grazioli <deroad@libero.it>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import sys
 import glob
 import os

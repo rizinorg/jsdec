@@ -1,4 +1,5 @@
-/* rizin - GPL3 - Copyright 2020 deroad */
+// SPDX-FileCopyrightText: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
+// SPDX-License-Identifier: BSD-3-Clause
 
 #include <stdlib.h>
 #include <string.h>
@@ -280,7 +281,7 @@ RzCorePlugin rz_core_plugin_jsdec = {
 	.name = "jsdec",
 	.author = "deroad",
 	.desc = "Pseudo-code decompiler for rizin",
-	.license = "GPL3",
+	.license = "BSD-3-Clause",
 	.init = rz_cmd_pdd_init,
 };
 

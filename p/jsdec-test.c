@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
+// SPDX-License-Identifier: BSD-3-Clause
+
 #include <string.h>
 #include <duktape.h>
 #include <duk_console.h>
