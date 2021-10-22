@@ -1,4 +1,5 @@
-/* rizin - GPL3 - Copyright 2020 deroad */
+// SPDX-FileCopyrightText: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
+// SPDX-License-Identifier: BSD-3-Clause
 
 #include <stdlib.h>
 #include <string.h>
@@ -254,7 +255,6 @@ static bool rz_cmd_pdd_init(RzCore *core) {
 	SETPREF("jsdec.highlight", "default", "highlights the current address.");
 	SETPREF("jsdec.paddr", "false", "if true, all xrefs uses physical addresses compare.");
 	SETPREF("jsdec.slow", "false", "load all the data before to avoid multirequests to rizin.");
-	SETPREF("jsdec.theme", "default", "defines the color theme to be used on jsdec.");
 	SETPREF("jsdec.xrefs", "false", "if true, shows all xrefs in the pseudo code.");
 	rz_config_lock(cfg, true);
 
@@ -281,7 +281,7 @@ RzCorePlugin rz_core_plugin_jsdec = {
 	.name = "jsdec",
 	.author = "deroad",
 	.desc = "Pseudo-code decompiler for rizin",
-	.license = "GPL3",
+	.license = "BSD-3-Clause",
 	.init = rz_cmd_pdd_init,
 };
 

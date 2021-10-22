@@ -1,0 +1,53 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: JSDec
+Upstream-Contact: Giovanni Dante Grazioli <deroad@libero.it>
+Source: https://github.com/rizinorg/jsdec
+
+Files: .ci-scripts/*
+Copyright: 2020 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: .github/*
+Copyright: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: .github/**/*
+Copyright: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: .eslintrc.json
+Copyright: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: .gitignore
+Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: *.md
+Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: eslint-check.sh
+Copyright: 2018-2019 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: p/duktape/*
+Copyright: 2013-2019 Duktape
+License: MIT
+
+Files: p/meson.build
+Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: p/meson_options.txt
+Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: p/.clang-format
+Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: p/Makefile
+Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
+Copyright: 2017-2018 pancake <pancake@nopcode.org>
+License: BSD-3-Clause

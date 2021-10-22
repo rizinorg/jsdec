@@ -1,21 +1,5 @@
-/* 
- * Copyright (C) 2018 deroad
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
+// SPDX-FileCopyrightText: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
+// SPDX-License-Identifier: BSD-3-Clause
 
 (function() { // lgtm [js/useless-expression]
     /**
@@ -56,12 +40,7 @@
         string: /("[^"]+")/,
     };
 
-    // const defaulttheme = JSON.parse(include('themes/default.json'));
-    // Just to be sure this won't impact anybody..
-
     const defaulttheme = initializeColors();
-
-    var colortheme = defaulttheme;
 
     /**
      * Color types (ansi, nocolor)
@@ -137,35 +116,13 @@
     };
 
     /**
-     * Gets the user theme and sets the color to be used.
-     * @param  {String} name - Theme name
-     */
-    var _themefy = function(name) {
-        if (typeof name != 'string' || name.indexOf('/') >= 0 || name == 'default') {
-            colortheme = defaulttheme;
-            return;
-        }
-        try {
-            colortheme = JSON.parse(include('themes/' + name + '.json'));
-            for (var key in defaulttheme) {
-                if (!colortheme[key]) {
-                    colortheme[key] = defaulttheme[key];
-                }
-            }
-        } catch (e) {
-            colortheme = defaulttheme;
-        }
-    };
-
-    /**
      * Applies all the colors options (theme/colors).
      */
     var _set_options = function() {
-        _themefy(Global.evars.extra.theme);
         if (Global.evars.honor.color) {
-            _theme_colors = Colors.ansi.make(colortheme);
+            _theme_colors = Colors.ansi.make(defaulttheme);
         } else {
-            _theme_colors = Colors.text.make(colortheme);
+            _theme_colors = Colors.text.make(defaulttheme);
         }
     };
 

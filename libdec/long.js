@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2009 The Closure Library Authors
+// SPDX-FileCopyrightText: 2020 Daniel Wirtz
+// SPDX-FileCopyrightText: 2020-2021 Giovanni Dante Grazioli <deroad@libero.it>
+// SPDX-License-Identifier: Apache-2.0
+
 (function() { // lgtm [js/useless-expression]
     /**
      * Constructs a 64 bit two's-complement integer, given its low and high 32 bit values as *signed* integers.
