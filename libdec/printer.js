@@ -56,12 +56,7 @@
         string: /("[^"]+")/,
     };
 
-    // const defaulttheme = JSON.parse(include('themes/default.json'));
-    // Just to be sure this won't impact anybody..
-
     const defaulttheme = initializeColors();
-
-    var colortheme = defaulttheme;
 
     /**
      * Color types (ansi, nocolor)
@@ -137,35 +132,13 @@
     };
 
     /**
-     * Gets the user theme and sets the color to be used.
-     * @param  {String} name - Theme name
-     */
-    var _themefy = function(name) {
-        if (typeof name != 'string' || name.indexOf('/') >= 0 || name == 'default') {
-            colortheme = defaulttheme;
-            return;
-        }
-        try {
-            colortheme = JSON.parse(include('themes/' + name + '.json'));
-            for (var key in defaulttheme) {
-                if (!colortheme[key]) {
-                    colortheme[key] = defaulttheme[key];
-                }
-            }
-        } catch (e) {
-            colortheme = defaulttheme;
-        }
-    };
-
-    /**
      * Applies all the colors options (theme/colors).
      */
     var _set_options = function() {
-        _themefy(Global.evars.extra.theme);
         if (Global.evars.honor.color) {
-            _theme_colors = Colors.ansi.make(colortheme);
+            _theme_colors = Colors.ansi.make(defaulttheme);
         } else {
-            _theme_colors = Colors.text.make(colortheme);
+            _theme_colors = Colors.text.make(defaulttheme);
         }
     };
 

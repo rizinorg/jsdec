@@ -69,7 +69,6 @@ jsdec.casts         | if false, hides all casts in the pseudo code.
 jsdec.debug         | do not catch exceptions in jsdec.
 jsdec.paddr         | if true, all xrefs uses physical addresses compare.
 jsdec.slow          | if true load all the data before to avoid multirequests to rizin.
-jsdec.theme         | defines the color theme to be used on jsdec.
 jsdec.xrefs         | if true, shows all xrefs in the pseudo code.
 e scr.html          | outputs html data instead of text.
 e scr.color         | enables syntax colors.

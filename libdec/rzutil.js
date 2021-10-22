@@ -235,7 +235,6 @@
                 json: has_option(args, '--as-json'),
                 offset: rzpipe.long('s'),
                 slow: rzpipe.bool('e jsdec.slow'),
-                theme: rzpipe.string('e jsdec.theme'),
                 annotation: has_option(args, '--annotation'),
             };
             this.add_comment = function(comment, offset) {
