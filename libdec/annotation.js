@@ -111,7 +111,6 @@
                     a.push(new Annotation(current + pos, tmp[i].length, tmp[i], null, "syntax_highlight", "global_variable"));
                     string_beg = pos;
                     string_end = pos + tmp[i].length;
-                    tmp = line.str.substr(string_end, 0);
                     break;
                 }
             }
@@ -150,7 +149,6 @@
                 }
             }
             /* keywords */
-            tmp = line.str.match(_re_keywords) || [];
             _match_annotation(_re_keywords, line.str, function(pos, match) {
                 if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
                     a.push(new Annotation(current + pos, match.length, match, null, "syntax_highlight", "keyword"));
