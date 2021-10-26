@@ -142,7 +142,7 @@
         _returns_r0(instr, context);
         var ptr = instr.parsed.opd[0];
         if (ptr.indexOf('-') >= 0) {
-            ptr = ptr.replace('-', '');
+            ptr = ptr.replace(/\-\d?/, '');
             v = Variable.uniqueName('local');
             //pointer, register, bits, is_signed
             m = [
@@ -155,7 +155,7 @@
             Global.context.addMacro(AVR_MEMORY[ptr].macro);
             return op;
         } else if (ptr.indexOf('+') >= 0) {
-            ptr = ptr.replace('+', '');
+            ptr = ptr.replace(/\+\d?/, '');
             v = Variable.uniqueName('local');
             //pointer, register, bits, is_signed
             m = [
