@@ -14,13 +14,13 @@ def main(argc, argv):
 		print("usage: {} <path/to/js/files>".format(argv[0]))
 		sys.exit(1)
 	path = os.path.join(argv[1])
-	path_len = len(argv[1])
+	path_len = len(path)
 
 	js_files = glob.glob(os.path.join(path, '**/*.js'), recursive=True)
 	js_files.remove(os.path.join(path, 'jsdec-test.js'))
 
 	for file in js_files:
-		vname = const_var_name(file[path_len + 1:])
+		vname = const_var_name(file.replace(path, ""))
 		code = ''
 		count = 0
 		with open(file, "rb") as f:
@@ -35,8 +35,10 @@ def main(argc, argv):
 	print('\n#define RZ_JSC_SIZE ({})\n\n'.format(len(js_files)))
 	print('const RzJSC rz_jsc_file[RZ_JSC_SIZE] = {')
 	for file in js_files:
-		name = file[path_len + 1:].replace(os.sep, '/')
-		vname = const_var_name(file[path_len + 1:])
+		name = file.replace(path, "").replace(os.sep, '/')
+		if name.startswith("/"):
+			name = name[1:]
+		vname = const_var_name(file.replace(path, ""))
 		print('\t{ .name = "' + name + '", .code = (const char *)' + vname + ' },')
 	print('};')
 

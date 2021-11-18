@@ -200,11 +200,19 @@ static void duk_jsdec(RzCore *core, const char *input) {
 	duk_jsdec_init(ctx, &jsdec_ctx);
 	eval_file(ctx, "require.js");
 	eval_file(ctx, "jsdec-duk.js");
+#ifdef USE_JSC
+	if (*input) {
+		snprintf(args, sizeof(args), "try{if(typeof jsdec_main == 'function'){jsdec_main(\"%s\".split(/\\s+/));}else{console.log('Fatal error. Cannot call jsdec_main.');}}catch(_____e){console.log(_____e.stack||_____e);}", input);
+	} else {
+		snprintf(args, sizeof(args), "try{if(typeof jsdec_main == 'function'){jsdec_main([]);}else{console.log('Fatal error. Cannot call jsdec_main.');}}catch(_____e){console.log(_____e.stack||_____e);}");
+	}
+#else
 	if (*input) {
 		snprintf(args, sizeof(args), "try{if(typeof jsdec_main == 'function'){jsdec_main(\"%s\".split(/\\s+/));}else{console.log('Fatal error. Cannot use RZ_HOME_DATADIR or JSDEC_HOME.');}}catch(_____e){console.log(_____e.stack||_____e);}", input);
 	} else {
 		snprintf(args, sizeof(args), "try{if(typeof jsdec_main == 'function'){jsdec_main([]);}else{console.log('Fatal error. Cannot use RZ_HOME_DATADIR or JSDEC_HOME.');}}catch(_____e){console.log(_____e.stack||_____e);}");
 	}
+#endif
 	duk_eval_string_noresult(ctx, args);
 	//duk_rizin_debug_stack(ctx);
 	duk_destroy_heap(ctx);
