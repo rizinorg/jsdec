@@ -1,46 +1,25 @@
 project('jsdec', 'c', meson_version: '>=0.46.0')
 
 pyth = import('python').find_installation()
-rizin = find_program('rizin', required: false)
 cc = meson.get_compiler('c')
 
-incs = ['.']
+incs = ['.', 'duktape']
 deps = []
 c_args = []
 
-rizin_incdir = get_option('rizin_incdir')
-if rizin_incdir == '' and rizin.found()
-  rizin_incdir = run_command(rizin, '-H', 'RZ_INCDIR').stdout().strip()
-endif
-
-rizin_libdir = get_option('rizin_libdir')
-if rizin_libdir == '' and rizin.found()
-  rizin_libdir = run_command(rizin, '-H', 'RZ_LIBDIR').stdout().strip()
-endif
-
 rizin_plugdir = get_option('rizin_plugdir')
-if rizin_plugdir == '' and rizin.found()
-  rizin_plugdir = run_command(rizin, '-H', 'RZ_USER_PLUGINS').stdout().strip()
-  if rizin_plugdir == ''
-    rizin_plugdir = get_option('libdir')
-  endif
+if rizin_plugdir == ''
+  rizin_plugdir = join_paths(get_option('libdir'), 'rizin', 'plugins')
 endif
 
-plugin_jsdec_dir = join_paths(rizin_plugdir, 'jsdec')
+plugin_jsdec_dir = join_paths(get_option('prefix'), rizin_plugdir, 'jsdec')
 
-libs = ['rz_core', 'rz_util', 'rz_cons', 'rz_config', 'rz_io']
-foreach lib : libs
-  deps += cc.find_library(lib, dirs: rizin_libdir)
-endforeach
-
+deps += dependency('rz_core')
+deps += dependency('rz_util')
+deps += dependency('rz_cons')
+deps += dependency('rz_config')
+deps += dependency('rz_io')
 deps += cc.find_library('m', required: false)
-
-if rizin_incdir != ''
-  incs += rizin_incdir
-  incs += rizin_incdir + '/sdb'
-endif
-
-incs += 'duktape'
 
 files = [
   'core_pdd.c',
@@ -67,8 +46,6 @@ if jsc_folder != ''
   )
 endif
 
-message('Rizin Include Dir: ' + rizin_incdir)
-message('Rizin Library Dir: ' + rizin_libdir)
 message('Rizin Plugin Dir:  ' + rizin_plugdir)
 if jsc_folder != ''
   message('JS to C Folder:    ' + jsc_folder)
