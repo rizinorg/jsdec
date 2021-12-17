@@ -16,16 +16,16 @@ Requires [rizin](https://github.com/rizinorg/rizin).
 Follow the following steps to install jsdec
  - clone this repository
  - Run `cd p`
- - Run `meson -Djsc_folder=".." build` to create the build folder
+ - Run `meson -Djsc_folder=".." --prefix=/usr build` to create the build folder
  - Run `ninja -C build install` to build the shared library and to install it 
 
 
-# Install in home folder
+# Install in home folder (or in other paths)
 
-If you want to install in the HOME folder, you can call `rizin -H RZ_USER_PLUGINS` for the exact user plugin path
-
+If you want to install in the HOME folder or in other non standard paths, just
+set the `prefix` to a different value
  - Run `cd p`
- - Run ``meson -Djsc_folder=".." -Drizin_plugdir=`rizin -H RZ_USER_PLUGINS` build``
+ - Run ``meson -Djsc_folder=".." --prefix=~/.local build``
  - Run `ninja -C build install`
 
 # Usage

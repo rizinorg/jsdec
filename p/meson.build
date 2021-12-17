@@ -1,4 +1,4 @@
-project('jsdec', 'c', meson_version: '>=0.46.0')
+project('jsdec', 'c', meson_version: '>=0.51.0')
 
 pyth = import('python').find_installation()
 cc = meson.get_compiler('c')
@@ -7,19 +7,22 @@ incs = ['.', 'duktape']
 deps = []
 c_args = []
 
-rizin_plugdir = get_option('rizin_plugdir')
-if rizin_plugdir == ''
-  rizin_plugdir = join_paths(get_option('libdir'), 'rizin', 'plugins')
-endif
-
-plugin_jsdec_dir = join_paths(get_option('prefix'), rizin_plugdir, 'jsdec')
-
-deps += dependency('rz_core')
+rz_core_dep = dependency('rz_core')
+deps += rz_core_dep
 deps += dependency('rz_util')
 deps += dependency('rz_cons')
 deps += dependency('rz_config')
 deps += dependency('rz_io')
 deps += cc.find_library('m', required: false)
+
+rizin_plugdir = get_option('rizin_plugdir')
+if rizin_plugdir == ''
+  rizin_plugdir = rz_core_dep.get_variable(pkgconfig: 'plugindir', cmake: 'rz_core_PLUGINDIR')
+  plugin_jsdec_dir = join_paths(get_option('prefix'), rizin_plugdir, 'jsdec')
+else
+  plugin_jsdec_dir = join_paths(rizin_plugdir, 'jsdec')
+endif
+
 
 files = [
   'core_pdd.c',
@@ -46,7 +49,7 @@ if jsc_folder != ''
   )
 endif
 
-message('Rizin Plugin Dir:  ' + rizin_plugdir)
+message('Rizin Plugin Dir:  ' + plugin_jsdec_dir)
 if jsc_folder != ''
   message('JS to C Folder:    ' + jsc_folder)
 endif
