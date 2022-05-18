@@ -20,10 +20,8 @@
     }
 
     function merge_arrays(input) {
-        input = input.split('\n').map(function(x) {
-            return x.length > 2 ? x.trim().substr(1, x.length).substr(0, x.length - 2) : '';
-        });
-        var array = '[' + input.filter(Boolean).join(',') + ']';
+        input = input.replace(/\n/g, ',');
+        var array = '[' + input + ']';
         return array;
     }
 
@@ -99,7 +97,7 @@
         var farguments = rz_sanitize(rzpipe.string('afvj', true), '{"sp":[],"bp":[],"reg":[]}');
         var arch = rz_sanitize(rzpipe.string('e asm.arch'), '');
         var archbits = rz_sanitize(rzpipe.string('e asm.bits'), '32');
-        var database = rz_sanitize(rzpipe.custom('afcfj @@i', /^\[\]\n/g, merge_arrays), '[]');
+        var database = rz_sanitize(rzpipe.custom('afsj @@i', null, merge_arrays), '[]');
         console.log('{"name":"issue_' + (new Date()).getTime() +
             '","arch":"' + arch +
             '","archbits":' + archbits +
@@ -293,7 +291,7 @@
                 }))
             };
             this.graph = rzpipe.json64('agj', []);
-            this.argdb = rzpipe.custom('afcfj @@i', /^\[\]\n/g, merge_arrays_json);
+            this.argdb = rzpipe.custom('afsj @@i', null, merge_arrays_json);
         },
         sanitize: function(enable, evars) {
             if (!evars) {
@@ -311,7 +309,11 @@
         debug: function(evars, exception) {
             rzutil.sanitize(false, evars);
             if (!evars || evars.extra.debug) {
-                return 'Exception: ' + exception.stack;
+                if (exception.stack) {
+                    return 'Exception: ' + exception.stack;
+                }
+                var msg = exception.name + ' ' + exception.message + ' line:' + exception.at;
+                return 'Exception: ' + msg + '\n' + exception.text;
             } else {
                 return '\n\njsdec has crashed (info: ' + rzpipe.string('i~^file[1:0]') + ' @ ' + rzpipe.string('s') + ').\n' +
                     'Please report the bug at https://github.com/rizinorg/jsdec/issues\n' +
