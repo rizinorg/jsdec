@@ -1,4 +1,4 @@
-project('jsdec', 'c', meson_version: '>=0.51.0')
+project('jsdec', 'c', meson_version: '>=0.55.0')
 
 pyth = import('python').find_installation()
 cc = meson.get_compiler('c')
@@ -36,7 +36,7 @@ jsc_folder = get_option('jsc_folder')
 if jsc_folder != ''
   c_args += '-DUSE_JSC'
   generator_jsc = files('make_jsc.py')
-  rc = run_command(pyth, generator_jsc, jsc_folder)
+  rc = run_command(pyth, generator_jsc, jsc_folder, check: true)
   if rc.returncode() != 0
     error('failed to generate jsc files.')
   endif
