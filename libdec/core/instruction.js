@@ -96,6 +96,10 @@
         this.location = data.offset;
         this.assembly = data.disasm || data.opcode;
         this.simplified = data.opcode;
+        this.cpp_type = this.assembly.match(/(class|method|struct)\s[\w:]+(<[\w:<, >]+>)?\s+/);
+        if (this.cpp_type) {
+            this.assembly = this.assembly.replace(this.cpp_type[0], '')
+        }
         this.parsed = arch.parse(this.assembly, this.simplified);
         this.string = null;
         this.symbol = null;
