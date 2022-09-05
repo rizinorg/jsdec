@@ -93,7 +93,7 @@
         var strings = rz_sanitize(rzpipe.string('Cslj'), '[]');
         var functions = rz_sanitize(rzpipe.string('aflj'), '[]');
         var classes = rz_sanitize(rzpipe.string('icj'), '[]');
-        var data = rz_sanitize(rzpipe.string('agj'), '[]');
+        var data = rz_func_graph();
         var farguments = rz_sanitize(rzpipe.string('afvj', true), '{"sp":[],"bp":[],"reg":[]}');
         var arch = rz_sanitize(rzpipe.string('e asm.arch'), '');
         var archbits = rz_sanitize(rzpipe.string('e asm.bits'), '32');
@@ -290,7 +290,7 @@
                     "reg": []
                 }))
             };
-            this.graph = rzpipe.json64('agj', []);
+            this.graph = _JSON.parse(rz_func_graph());
             this.argdb = rzpipe.custom('afsj @@i', null, merge_arrays_json);
         },
         sanitize: function(enable, evars) {
