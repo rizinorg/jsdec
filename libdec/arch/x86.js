@@ -727,6 +727,7 @@
 
     /**
      * Return a list of the amd64 microsoft function call arguments.
+     * https://docs.microsoft.com/en-us/cpp/cpp/fastcall?view=msvc-170
      * @param {Array<Object>} instrs Array of instructions preceding the function call
      * @param {number} nargs Number of arguments expected for this function call
      * @param {Object} context Context object (not used)
@@ -734,8 +735,8 @@
      */
     var _populate_ms_amd64_call_args = function(instrs, nargs, context) {
         var regs = {
-            regs64: [ /**/ 'rcx', /**/ 'rdx', /* */ 'r8', /*  */ 'r9'],
-            regs32: [ /**/ 'eax', /**/ 'ecx', /**/ 'edx'],
+            regs64: [ 'rcx', 'rdx', 'r8', 'r9'],
+            regs32: [ 'ecx', 'edx'],
             krnl64: [],
             krnl32: [],
         };

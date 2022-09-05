@@ -38,6 +38,7 @@
         "module": true,
         "console": true,
         "rzcmd": true,
+        "rz_func_graph": true,
         "___internal_load": true,
         "___internal_require": true
     }

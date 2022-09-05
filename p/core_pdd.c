@@ -138,6 +138,60 @@ static duk_ret_t duk_internal_require(duk_context *ctx) {
 	return 1;
 }
 
+static char *function_graph_nodes(RzCore *core) {
+	RzAnalysisFunction *fcn = rz_analysis_get_fcn_in(core->analysis, core->offset, -1);
+	if (!fcn) {
+		return strdup("[]");
+	}
+
+	PJ *pj = pj_new();
+	if (!pj) {
+		return strdup("[]");
+	}
+
+	pj_a(pj);
+	char *fcn_name_escaped = rz_str_escape_utf8_for_json(fcn->name, -1);
+	pj_o(pj);
+	pj_ks(pj, "name", rz_str_get_null(fcn_name_escaped));
+	free(fcn_name_escaped);
+	pj_k(pj, "blocks");
+	pj_a(pj);
+
+	RzAnalysisBlock *bbi;
+	RzListIter *iter;
+	rz_list_foreach (fcn->bbs, iter, bbi) {
+		pj_o(pj);
+		pj_k(pj, "ops");
+		pj_a(pj);
+		ut8 *buf = malloc(bbi->size);
+		if (buf) {
+			rz_io_read_at(core->io, bbi->addr, buf, bbi->size);
+			rz_core_print_disasm_json(core, bbi->addr, buf, bbi->size, 0, pj);
+			free(buf);
+		} else {
+			printf("Error: cannot allocate %" PFMT64u " byte(s)\n", bbi->size);
+		}
+		pj_end(pj);
+		pj_end(pj);
+	}
+
+	pj_end(pj);
+	pj_end(pj);
+	pj_end(pj);
+
+	return pj_drain(pj);
+}
+
+static duk_ret_t duk_rz_func_graph(duk_context *ctx) {
+	JsDecCtx *jsdec_ctx = jsdec_ctx_get(ctx);
+	rz_cons_sleep_end(jsdec_ctx->bed);
+	char *output = function_graph_nodes(jsdec_ctx->core);
+	jsdec_ctx->bed = rz_cons_sleep_begin();
+	duk_push_string(ctx, output);
+	free(output);
+	return 1;
+}
+
 static void duk_jsdec_init(duk_context *ctx, JsDecCtx *jsdec_ctx) {
 	duk_push_global_stash(ctx);
 	duk_push_pointer(ctx, (void *)jsdec_ctx);
@@ -150,6 +204,9 @@ static void duk_jsdec_init(duk_context *ctx, JsDecCtx *jsdec_ctx) {
 	duk_put_global_string(ctx, "___internal_load");
 	duk_push_c_function(ctx, duk_rzcmd, 1);
 	duk_put_global_string(ctx, "rzcmd");
+
+	duk_push_c_function(ctx, duk_rz_func_graph, 1);
+	duk_put_global_string(ctx, "rz_func_graph");
 }
 
 JsDecCtx *jsdec_ctx_get(duk_context *ctx) {
