@@ -185,12 +185,12 @@
     };
 
     /**
-     * For a given local variable `name`, retreive its offset from the frame pointer. This become handy when
+     * For a given local variable `name`, retreive its offset from the frame base. This become handy when
      * local variables are referred by their name, but there is a need to query their offset; e.g. returns
      * 16 when a variable is referred by rbp + 16.
      * @param {string} name A string literal
      * @param {Object} context
-     * @returns {number} Offset from frame pointer (in bytes), or undefined if no such variable name or
+     * @returns {number} Offset from frame base (in bytes), or undefined if no such variable name or
      * variable exists, but is not on stack
      */
     var _get_var_offset = function(name, context) {
@@ -203,7 +203,7 @@
             }
         });
 
-        return info ? info.ref.offset.low : undefined;
+        return info && info.storage.type === "stack" ? info.storage.stack_off : undefined;
     };
 
     /**
@@ -295,7 +295,7 @@
 
     var _is_stack_based_local_var = function(name, context) {
         return context.vars.some(function(v) {
-            return (v.name === name) && (_is_stack_reg(v.ref.base));
+            return (v.name === name) && v.storage.type === "stack";
         });
     };
 
@@ -1545,7 +1545,7 @@
         context: function(data) {
             var fcnargs = data.xrefs.arguments;
 
-            var vars_args = Array.prototype.concat(fcnargs.bp, fcnargs.sp, fcnargs.reg).map(function(x) {
+            var vars_args = Array.prototype.concat(fcnargs.stack, fcnargs.reg).map(function(x) {
                 if (x.type === 'int' || x.type === 'signed int') {
                     x.type = 'int32_t';
                 } else if (x.type === 'unsigned int') {
@@ -1562,10 +1562,10 @@
                 },
                 leave: false,
                 vars: vars_args.filter(function(e) {
-                    return (e.kind === 'var');
+                    return !e.arg;
                 }) || [],
                 args: vars_args.filter(function(e) {
-                    return (e.kind === 'arg' || e.kind === 'reg');
+                    return e.arg;
                 }) || []
             };
         },
@@ -1576,9 +1576,9 @@
             return context.vars.map(function(v) {
                 return v.type + ' ' + v.name;
             }).concat(context.args.filter(function(v) {
-                return typeof v.ref == 'string';
+                return v.storage.type === "reg";
             }).map(function(v) {
-                return v.ref + ' = ' + v.name;
+                return v.storage.reg + ' = ' + v.name;
             }));
         },
         postanalisys: function(instructions, context) {

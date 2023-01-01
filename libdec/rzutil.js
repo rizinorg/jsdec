@@ -29,22 +29,6 @@
         return _JSON.parse(merge_arrays(input));
     }
 
-    function offset_long(vars) {
-        var p = function(x) {
-            if (x.ref && typeof x.ref.offset == 'string') {
-                x.ref.offset = Long.fromString(x.ref.offset, false, 10);
-            }
-            return x;
-        };
-        if (!vars) {
-            return vars;
-        }
-        vars.bp = vars.bp.map(p);
-        vars.reg = vars.reg.map(p);
-        vars.sp = vars.sp.map(p);
-        return vars;
-    }
-
     var padding = '                   ';
     var usages = {
         "--help": "this help message",
@@ -181,9 +165,8 @@
                     strings: o.Csj || o.izj || [],
                     functions: o.aflj || [],
                     classes: o.icj || [],
-                    arguments: offset_long(o.afvj) || {
-                        "sp": [],
-                        "bp": [],
+                    arguments: o.afvj || {
+                        "stack": [],
                         "reg": []
                     }
                 },
@@ -284,11 +267,10 @@
                 strings: (isfast ? [] : rzpipe.json64('Cslj', [])),
                 functions: (isfast ? [] : rzpipe.json64('aflj', [])),
                 classes: rzpipe.json64('icj', []),
-                arguments: offset_long(rzpipe.json64('afvj', {
-                    "sp": [],
-                    "bp": [],
+                arguments: rzpipe.json64('afvj', {
+                    "stack": [],
                     "reg": []
-                }))
+                })
             };
             this.graph = _JSON.parse(rz_func_graph());
             this.argdb = rzpipe.custom('afsj @@i', null, merge_arrays_json);
