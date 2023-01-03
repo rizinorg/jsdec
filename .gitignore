@@ -8,3 +8,5 @@ p/jsdec-test
 core_pdd.so
 p/*.o
 p/duktape/*.o
+.DS_Store
+.cache/
