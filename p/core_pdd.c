@@ -306,7 +306,7 @@ command_handler(pddo, "--offsets");
 static bool rz_cmd_pdd_init(RzCore *core) {
 	RzCmd *rcmd = core->rcmd;
 	RzConfig *cfg = core->config;
-	RzCmdDesc *root_cd = rz_cmd_get_root(rcmd);
+	RzCmdDesc *root_cd = rz_cmd_get_desc(rcmd, "pd");
 	if (!root_cd) {
 		rz_warn_if_reached();
 		return false;
