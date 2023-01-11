@@ -342,12 +342,19 @@ static bool rz_cmd_pdd_init(RzCore *core) {
 	return true;
 }
 
+static bool rz_cmd_pdd_fini(RzCore *core) {
+	RzCmd *rcmd = core->rcmd;
+	RzCmdDesc *cd = rz_cmd_get_desc(rcmd, "pdd");
+	return rz_cmd_desc_remove(rcmd, cd);
+}
+
 RzCorePlugin rz_core_plugin_jsdec = {
 	.name = "jsdec",
 	.author = "deroad",
 	.desc = "Pseudo-code decompiler for rizin",
 	.license = "BSD-3-Clause",
 	.init = rz_cmd_pdd_init,
+	.fini = rz_cmd_pdd_fini,
 };
 
 #ifdef _MSC_VER
