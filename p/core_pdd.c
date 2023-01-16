@@ -368,6 +368,5 @@ _RZ_API RzLibStruct rizin_plugin = {
 	.type = RZ_LIB_TYPE_CORE,
 	.data = &rz_core_plugin_jsdec,
 	.version = RZ_VERSION,
-	.pkgname = "jsdec"
 };
 #endif
