@@ -69,7 +69,7 @@
                         name: x.name
                     };
                 }),
-                variables: data.arch == "dalvik" ? [] : Array.prototype.concat(data.xrefs.arguments.bp, data.xrefs.arguments.sp, data.xrefs.arguments.reg)
+                variables: data.arch == "dalvik" ? [] : Array.prototype.concat(data.xrefs.arguments.stack, data.xrefs.arguments.reg)
             };
         },
         parse: function(current, line, context) {
