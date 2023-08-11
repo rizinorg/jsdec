@@ -106,6 +106,10 @@
         return ops[0];
     }
 
+    var _is_last_instruction = function(instr, instructions) {
+        return instructions.indexOf(instr) == (instructions.length - 1);
+    };
+
     return {
         instructions: {
             mov: _op_move,
@@ -410,6 +414,13 @@
             jsr: function(instr, context, instructions) {
                 var e = instr.parsed.opd;
                 return Base.call(Variable.functionPointer(e[1].token), []);
+            },
+            bsr: function(instr, context, instructions) {
+                var e = instr.parsed.opd;
+                if (_is_last_instruction(instr, instructions)) {
+                    return Base.call(Variable.functionPointer(e[1].token), []);
+                }
+                return Base.nop();
             },
             bra: function(instr) {
                 var callname = _arg(instr, 1);
