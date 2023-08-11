@@ -1,7 +1,7 @@
 {
     "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "script",
+        "ecmaVersion": "latest",
+        "sourceType": "module",
         "ecmaFeatures": {}
     },
     "extends": "eslint:recommended",
@@ -29,17 +29,8 @@
 	"no-control-regex": "warn"
     },
     "globals": {
-        "Global": true,
-        "Duktape": true,
-        "TextDecoder": true,
-        "require": true,
-        "include": true,
-        "read_file": true,
-        "module": true,
-        "console": true,
-        "rzcmd": true,
-        "rz_func_graph": true,
-        "___internal_load": true,
-        "___internal_require": true
+        "Limits": true,
+        "rizin": true,
+        "console": true
     }
 }

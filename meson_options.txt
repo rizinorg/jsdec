@@ -1,0 +1,2 @@
+option('rizin_plugdir', type: 'string', value: '', description: 'rizin install directory')
+option('standalone', type: 'boolean', value: false, description: 'enables/disables building only the standalone executable for testing purposes')
