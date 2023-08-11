@@ -31,23 +31,22 @@ Files: eslint-check.sh
 Copyright: 2018-2019 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
 
-Files: p/duktape/*
-Copyright: 2013-2019 Duktape
-License: MIT
+Files: subprojects/*
+Copyright: 2023 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
 
-Files: p/meson.build
+Files: subprojects/**/*
+Copyright: 2023 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
+
+Files: meson.build
 Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
 
-Files: p/meson_options.txt
+Files: meson_options.txt
 Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
 
-Files: p/.clang-format
+Files: .clang-format
 Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
-License: BSD-3-Clause
-
-Files: p/Makefile
-Copyright: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
-Copyright: 2017-2018 pancake <pancake@nopcode.org>
 License: BSD-3-Clause

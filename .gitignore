@@ -1,12 +1,2 @@
-/nbproject/
-/node_modules/
-p/build
-p/clean
-p/core_pdd.so
-p/jsdec-test
-/themes/*.json
-core_pdd.so
-p/*.o
-p/duktape/*.o
-.DS_Store
-.cache/
+build*/
+subprojects/libquick*/
