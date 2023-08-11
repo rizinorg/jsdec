@@ -1,2 +1,0 @@
-option('rizin_plugdir', type: 'string', value: '', description: 'rizin install directory')
-option('jsc_folder', type: 'string', value: '', description: 'When a path is defined, the js code, found in its subfolders, is embedded into the C code.')

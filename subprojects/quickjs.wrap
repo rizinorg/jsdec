@@ -1,0 +1,3 @@
+[wrap-git]
+https://github.com/frida/quickjs.git
+revision = c81f05c9859cea5f83a80057416a0c7affe9b876
