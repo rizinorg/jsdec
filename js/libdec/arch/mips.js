@@ -1,12 +1,10 @@
-// SPDX-FileCopyrightText: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
+// SPDX-FileCopyrightText: 2017-2023 Giovanni Dante Grazioli <deroad@libero.it>
 // SPDX-License-Identifier: BSD-3-Clause
 
-(function() { // lgtm [js/useless-expression]
-
-    var Instruction = require('libdec/core/instruction');
-    var Base = require('libdec/core/base');
-    var Variable = require('libdec/core/variable');
-    var Long = require('libdec/long');
+import Instruction from '../core/instruction.js';
+import Base from '../core/base.js';
+import Variable from '../core/variable.js';
+import Long from '../long.js';
 
     const _mips_registers = [
         'zero', 'at', 'v0', 'v1',
@@ -138,10 +136,10 @@
         ];
         var address = [
             function(e, addr) {
-                return Long.fromString(_hex(e.opd[1]) + '0000', true, 16);
+                return Long.from(_hex(e.opd[1]) + '0000', true, 16);
             },
             function(e, addr) {
-                var n = Long.fromString(_hex(e.opd[2]), e.mnem.indexOf('u') > 0, 16);
+                var n = Long.from(_hex(e.opd[2]), e.mnem.indexOf('u') > 0, 16);
                 var op = e.mnem.replace(/[iu]/g, '');
                 return addr[op](n);
             },
@@ -164,8 +162,8 @@
         }
         --i;
         if (instr.parsed.opd[0] != 'gp') {
-            instr.string = Global.xrefs.find_string(addr);
-            instr.symbol = Global.xrefs.find_symbol(addr);
+            instr.string = Global().xrefs.find_string(addr);
+            instr.symbol = Global().xrefs.find_symbol(addr);
             addr = instr.string ? Variable.string(instr.string) : (instr.symbol || ('0x' + addr.toString(16)).replace(/0x-/, '-0x'));
             instr.valid = true;
         } else {
@@ -219,7 +217,7 @@
         'bgtz', 'bgez', 'beq', 'bne', 'bnel'
     ];
 
-    return {
+    export default {
         instructions: {
             'nop': function(instr) {
                 return Base.nop();
@@ -523,4 +521,3 @@
             return 'void';
         }
     };
-});

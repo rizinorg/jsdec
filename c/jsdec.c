@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include "base64.h"
 #include "jsdec.h"
 #include "js/bytecode.h"
 
@@ -123,6 +125,59 @@ void jsdec_free(jsdec_t *dec) {
 	free(dec);
 }
 
+static JSValue js_atob(JSContext *ctx, JSValueConst jsThis, int argc, JSValueConst *argv) {
+	if (argc != 1 || !JS_IsString(argv[0])) {
+		return JS_EXCEPTION;
+	}
+
+	const char *encoded = JS_ToCString(ctx, argv[0]);
+	if (!encoded) {
+		return JS_EXCEPTION;
+	}
+
+	int length = (int)strlen(encoded);
+	if (length < 1 || !base64integrity(encoded, length)) {
+		JS_FreeCString(ctx, encoded);
+		return JS_ThrowInternalError(ctx, "Invalid base64 string");
+	}
+
+	int flen = 0;
+	char *decoded = (char *)unbase64(encoded, length, &flen);
+	JS_FreeCString(ctx, encoded);
+
+	JSValue result = JS_NewStringLen(ctx, decoded, flen);
+	free(decoded);
+	return result;
+}
+
+static JSValue js_btoa(JSContext *ctx, JSValueConst jsThis, int argc, JSValueConst *argv) {
+	if (argc != 1 || !JS_IsString(argv[0])) {
+		return JS_EXCEPTION;
+	}
+
+	const char *decoded = JS_ToCString(ctx, argv[0]);
+	if (!decoded) {
+		return JS_EXCEPTION;
+	}
+
+	int length = (int)strlen(decoded);
+	if (length < 0) {
+		JS_FreeCString(ctx, decoded);
+		return JS_ThrowInternalError(ctx, "Invalid string");
+	} else if (!length) {
+		JS_FreeCString(ctx, decoded);
+		return JS_NewString(ctx, "");
+	}
+
+	int flen = 0;
+	char *encoded = base64(decoded, length, &flen);
+	JS_FreeCString(ctx, decoded);
+
+	JSValue result = JS_NewStringLen(ctx, encoded, flen);
+	free(encoded);
+	return result;
+}
+
 jsdec_t *jsdec_new() {
 	JSRuntime *rt = JS_NewRuntime();
 	if (!rt) {
@@ -139,6 +194,7 @@ jsdec_t *jsdec_new() {
 
 	// initialize all intrisic
 	JS_AddIntrinsicBaseObjects(ctx);
+	JS_AddIntrinsicDate(ctx);
 	JS_AddIntrinsicRegExp(ctx);
 	JS_AddIntrinsicJSON(ctx);
 	JS_AddIntrinsicMapSet(ctx);
@@ -149,6 +205,22 @@ jsdec_t *jsdec_new() {
 	JS_AddIntrinsicOperators(ctx);
 	JS_AddIntrinsicEval(ctx);
 	JS_EnableBignumExt(ctx, 1);
+
+	// Setup global objects.
+	JSValue global = JS_GetGlobalObject(ctx);
+
+	JS_SetPropertyStr(ctx, global, "atob", JS_NewCFunction(ctx, js_atob, "atob", 1));
+	JS_SetPropertyStr(ctx, global, "btoa", JS_NewCFunction(ctx, js_btoa, "btoa", 1));
+
+	JSValue limits = JS_NewObject(ctx);
+	JS_SetPropertyStr(ctx, global, "Limits", limits);
+	JS_SetPropertyStr(ctx, limits, "UT16_MAX", JS_NewBigUint64(ctx, 0xFFFFu));
+	JS_SetPropertyStr(ctx, limits, "UT32_MAX", JS_NewBigUint64(ctx, 0xFFFFFFFFu));
+	JS_SetPropertyStr(ctx, limits, "UT64_MAX", JS_NewBigUint64(ctx, 0xFFFFFFFFFFFFFFFFull));
+	JS_SetPropertyStr(ctx, limits, "ST16_MAX", JS_NewBigInt64(ctx, 0x7FFF));
+	JS_SetPropertyStr(ctx, limits, "ST32_MAX", JS_NewBigInt64(ctx, 0x7FFFFFFF));
+	JS_SetPropertyStr(ctx, limits, "ST64_MAX", JS_NewBigInt64(ctx, 0x7FFFFFFFFFFFFFFFull));
+	JS_FreeValue(ctx, global);
 
 	if (!js_load_all_modules(ctx)) {
 		JS_FreeContext(ctx);
