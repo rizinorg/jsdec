@@ -1,141 +1,145 @@
 // SPDX-FileCopyrightText: 2018-2023 Giovanni Dante Grazioli <deroad@libero.it>
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <string.h>
-#include <duktape.h>
-#include <duk_console.h>
-#include <duk_missing.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-static const char *jsdec_home = 0;
+#include "jsdec.h"
+#define errorf(...) fprintf(stderr, __VA_ARGS__)
 
-char *read_slurp(const char *filename) {
-	FILE *fp;
-	long size;
-	char *buffer = NULL;
+static JSValue shared;
 
-	fp = fopen(filename, "rb");
-	if (fp) {
-		fseek(fp, 0, SEEK_END); // non-portable
-		size = ftell(fp);
-		rewind(fp);
-		if (size > 0) {
-			if ((buffer = malloc(size + 1))) {
-				int read_bytes = fread(buffer, 1, size, fp);
-				if (read_bytes != size) {
-					fprintf(stderr, "failed to read (%d/%ld bytes) from %s\n", read_bytes, size, filename);
-					free(buffer);
-					buffer = NULL;
-				} else {
-					// + 1 as on malloc
-					buffer[size] = 0;
-				}
-			} else {
-				fprintf(stderr, "ENOMEM (%ld bytes)\n", size);
-			}
-		} else {
-			fprintf(stderr, "negative size (%ld) of %s\n", size, filename);
-		}
-		fclose(fp);
-	} else {
-		fprintf(stderr, "error opening file %s\n", filename);
-	}
-	return buffer;
-}
-
-static char *jsdec_read_file(const char *file) {
-	if (!file) {
+int is_regular_file(const char *path) {
+	if (!path || !*path) {
 		return 0;
 	}
-	char filepath[1024];
-	snprintf(filepath, sizeof(filepath), "%s/%s", jsdec_home, file);
-	return read_slurp(filepath);
+	struct stat path_stat;
+	stat(path, &path_stat);
+	return S_ISREG(path_stat.st_mode);
 }
 
-static duk_ret_t duk_internal_require(duk_context *ctx) {
-	char fullname[256];
-	if (duk_is_string(ctx, 0)) {
-		snprintf(fullname, sizeof(fullname), "%s.js", duk_safe_to_string(ctx, 0));
-		char *text = jsdec_read_file(fullname);
-		if (text) {
-			duk_push_lstring(ctx, fullname, strlen(fullname));
-			duk_eval_file(ctx, text);
-			free(text);
-		} else {
-			printf("Error: '%s' not found.\n", fullname);
-			return DUK_RET_TYPE_ERROR;
+static char *read_file(const char *filename) {
+	FILE *fp = NULL;
+	long size = 0;
+	char *buffer = NULL;
+
+	if (!is_regular_file(filename)) {
+		errorf("Error: path '%s' is not a file\n", filename);
+		return NULL;
+	}
+
+	fp = fopen(filename, "rb");
+	if (!fp) {
+		errorf("Error: failed opening file '%s'\n", filename);
+		return NULL;
+	}
+
+	fseek(fp, 0, SEEK_END); // non-portable
+	size = ftell(fp);
+	rewind(fp);
+	if (size < 1) {
+		errorf("Error: negative size (%ld) of '%s'\n", size, filename);
+		goto fail;
+	}
+
+	if (!(buffer = malloc(size + 1))) {
+		errorf("Error: ENOMEM (%ld bytes) of '%s'\n", size, filename);
+		goto fail;
+	}
+
+	int read_bytes = fread(buffer, 1, size, fp);
+	if (read_bytes != size) {
+		errorf("Error: failed to read (%d/%ld bytes) from '%s'\n", read_bytes, size, filename);
+		goto fail;
+	}
+
+	// + 1 as on malloc
+	buffer[size] = 0;
+	fclose(fp);
+	return buffer;
+
+fail:
+	fclose(fp);
+	free(buffer);
+	return NULL;
+}
+
+static JSValue js_console_log(JSContext *ctx, JSValueConst jsThis, int argc, JSValueConst *argv) {
+	for (int i = 0; i < argc; ++i) {
+		if (i != 0) {
+			fputc(' ', stdout);
 		}
-		return 1;
-	}
-	return DUK_RET_TYPE_ERROR;
-}
-
-static duk_ret_t duk_internal_read_file(duk_context *ctx) {
-	const char *fullname;
-	if (duk_is_string(ctx, 0)) {
-		fullname = duk_safe_to_string(ctx, 0);
-		char *text = read_slurp(fullname);
-		if (text) {
-			duk_push_string(ctx, text);
-			free(text);
-		} else {
-			printf("error: '%s' not found.\n", fullname);
-			return DUK_RET_TYPE_ERROR;
+		const char *str = JS_ToCString(ctx, argv[i]);
+		if (!str) {
+			return JS_EXCEPTION;
 		}
-		return 1;
+		fputs(str, stdout);
+		JS_FreeCString(ctx, str);
 	}
-	return DUK_RET_TYPE_ERROR;
+	fputc('\n', stdout);
+	fflush(stdout);
+	return JS_UNDEFINED;
 }
 
-static void duk_r2_init(duk_context *ctx) {
-	duk_push_c_function(ctx, duk_internal_require, 1);
-	duk_put_global_string(ctx, "___internal_require");
-	duk_push_c_function(ctx, duk_internal_read_file, 1);
-	duk_put_global_string(ctx, "read_file");
+static JSValue js_get_global(JSContext *ctx, JSValueConst jsThis, int argc, JSValueConst *argv) {
+	return JS_GetPropertyStr(ctx, shared, "Shared");
 }
 
-static int eval_file(duk_context *ctx, const char *file) {
-	char *text = jsdec_read_file(file);
-	if (text) {
-		duk_push_lstring(ctx, file, strlen(file));
-		duk_eval_file_noresult(ctx, text);
-		free(text);
-		return 1;
-	}
-	return 0;
+static int init_testsuite(jsdec_t *dec, const char *file, const char *raw) {
+	JSContext *ctx = jsdec_context(dec);
+
+	shared = JS_NewObject(ctx);
+	JS_SetPropertyStr(ctx, shared, "Shared", JS_NewObject(ctx));
+
+	JSValue global = JS_GetGlobalObject(ctx);
+	JS_SetPropertyStr(ctx, global, "Global", JS_NewCFunction(ctx, js_get_global, "Global", 1));
+	JS_SetPropertyStr(ctx, global, "rizin", JS_NULL);
+
+	JSValue console = JS_NewObject(ctx);
+	JS_SetPropertyStr(ctx, global, "console", console);
+	JS_SetPropertyStr(ctx, console, "log", JS_NewCFunction(ctx, js_console_log, "log", 1));
+
+	JSValue unit = JS_NewObject(ctx);
+	JS_SetPropertyStr(ctx, global, "unit", unit);
+	JS_SetPropertyStr(ctx, unit, "file", JS_NewString(ctx, file));
+	JS_SetPropertyStr(ctx, unit, "raw", JS_NewString(ctx, raw));
+
+	JS_FreeValue(ctx, global);
+	return 1;
 }
 
-static void jsdec_fatal_function(void *udata, const char *msg) {
-	fprintf(stderr, "*** FATAL ERROR: %s\n", (msg ? msg : "no message"));
-	fflush(stderr);
-	exit(1);
-}
-
-static void duk_jsdec(const char *input) {
-	char args[1024] = { 0 };
-	duk_context *ctx = duk_create_heap(0, 0, 0, 0, jsdec_fatal_function);
-	duk_console_init(ctx, 0);
-	//	Long_init (ctx);
-	duk_r2_init(ctx);
-	if (eval_file(ctx, "require.js") && eval_file(ctx, "jsdec-test.js")) {
-		if (*input) {
-			snprintf(args, sizeof(args), "jsdec_main(\"%s\")", input);
-		} else {
-			snprintf(args, sizeof(args), "jsdec_main()");
-		}
-		duk_eval_string_noresult(ctx, args);
-	}
-	duk_destroy_heap(ctx);
+static void fini_testsuite(jsdec_t *dec) {
+	JSContext *ctx = jsdec_context(dec);
+	JS_FreeValue(ctx, shared);
+	jsdec_free(dec);
 }
 
 int main(int argc, char const *argv[]) {
-	if (argc != 3) {
-		printf("usage: %s <home/jsdec-js> <issue.json>\n", argv[0]);
+	if (argc != 2 || !strcmp(argv[1], "-h")) {
+		errorf("usage: %s <issue.json>\n", argv[0]);
 		return 1;
 	}
-	jsdec_home = argv[1];
-	// fprintf (stderr, "HOME: %s\n", jsdec_home);
-	// fprintf (stderr, "JSON: %s\n", argv[2]);
-	duk_jsdec(argv[2]);
-	return 0;
+
+	jsdec_t *dec = NULL;
+	char *raw = read_file(argv[1]);
+	if (!raw) {
+		return 1;
+	}
+
+	if (!(dec = jsdec_new())) {
+		free(raw);
+		return 1;
+	}
+
+	init_testsuite(dec, argv[1], raw);
+	free(raw);
+
+	int ret = !jsdec_run(dec);
+
+	fini_testsuite(dec);
+	return ret;
 }

@@ -39,10 +39,6 @@ Files: subprojects/**/*
 Copyright: 2023 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
 
-Files: meson.build
-Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
-License: BSD-3-Clause
-
 Files: meson_options.txt
 Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause

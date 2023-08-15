@@ -17,6 +17,7 @@ typedef struct rz_core_t RzCore;
 typedef struct exec_context_t {
 	RzCore *core;
 	void *bed;
+	JSValue shared;
 } ExecContext;
 
 #undef RZ_API
@@ -130,21 +131,21 @@ static JSValue js_command(JSContext *ctx, JSValueConst jsThis, int argc, JSValue
 	if (argc != 1) {
 		return JS_EXCEPTION;
 	}
+
+	const char *command = JS_ToCString(ctx, argv[0]);
+	if (!command) {
+		return JS_EXCEPTION;
+	}
+
 	ExecContext *ectx = (ExecContext *)JS_GetContextOpaque(ctx);
 	RzCore *core = ectx->core;
 	rz_cons_sleep_end(ectx->bed);
 
-	const char *command = JS_ToCString(ctx, argv[0]);
-	if (!command) {
-		ectx->bed = rz_cons_sleep_begin();
-		return JS_EXCEPTION;
-	}
-
 	char *output = rz_core_cmd_str(core, command);
 	JS_FreeCString(ctx, command);
-
-	JSValue result = JS_NewString(ctx, output);
+	JSValue result = JS_NewString(ctx, output ? output : "");
 	free(output);
+
 	ectx->bed = rz_cons_sleep_begin();
 	return result;
 }
@@ -190,26 +191,24 @@ static JSValue js_console_log(JSContext *ctx, JSValueConst jsThis, int argc, JSV
 	return JS_UNDEFINED;
 }
 
-static jsdec_t *jsdec_create(void *opaque, const char *arg) {
+static JSValue js_get_global(JSContext *ctx, JSValueConst jsThis, int argc, JSValueConst *argv) {
+	ExecContext *ectx = (ExecContext *)JS_GetContextOpaque(ctx);
+	return JS_GetPropertyStr(ctx, ectx->shared, "Shared");
+}
+
+static jsdec_t *jsdec_create(ExecContext *ec, const char *arg) {
 	jsdec_t *dec = jsdec_new();
 	if (!dec) {
 		return NULL;
 	}
 
 	JSContext *ctx = jsdec_context(dec);
-	JS_SetContextOpaque(ctx, opaque);
+	JS_SetContextOpaque(ctx, ec);
+	ec->shared = JS_NewObject(ctx);
+	JS_SetPropertyStr(ctx, ec->shared, "Shared", JS_NewObject(ctx));
 
 	JSValue global = JS_GetGlobalObject(ctx);
-	JS_SetPropertyStr(ctx, global, "Global", JS_NewObject(ctx));
-
-	JSValue limits = JS_NewObject(ctx);
-	JS_SetPropertyStr(ctx, global, "Limits", limits);
-	JS_SetPropertyStr(ctx, limits, "UT16_MAX", JS_NewBigUint64(ctx, UT16_MAX));
-	JS_SetPropertyStr(ctx, limits, "UT32_MAX", JS_NewBigUint64(ctx, UT32_MAX));
-	JS_SetPropertyStr(ctx, limits, "UT64_MAX", JS_NewBigUint64(ctx, UT64_MAX));
-	JS_SetPropertyStr(ctx, limits, "ST16_MAX", JS_NewBigInt64(ctx, ST16_MAX));
-	JS_SetPropertyStr(ctx, limits, "ST32_MAX", JS_NewBigInt64(ctx, ST32_MAX));
-	JS_SetPropertyStr(ctx, limits, "ST64_MAX", JS_NewBigInt64(ctx, ST64_MAX));
+	JS_SetPropertyStr(ctx, global, "Global", JS_NewCFunction(ctx, js_get_global, "Global", 1));
 
 	JSValue console = JS_NewObject(ctx);
 	JS_SetPropertyStr(ctx, global, "console", console);
@@ -232,6 +231,12 @@ static jsdec_t *jsdec_create(void *opaque, const char *arg) {
 	return dec;
 }
 
+static void jsdec_destroy(jsdec_t *dec, ExecContext *ec) {
+	JSContext *ctx = jsdec_context(dec);
+	JS_FreeValue(ctx, ec->shared);
+	jsdec_free(dec);
+}
+
 static bool jsdec_main(RzCore *core, const char *arg) {
 	ExecContext ectx;
 	ectx.core = core;
@@ -245,7 +250,7 @@ static bool jsdec_main(RzCore *core, const char *arg) {
 	bool ret = jsdec_run(dec);
 	rz_cons_sleep_end(ectx.bed);
 
-	jsdec_free(dec);
+	jsdec_destroy(dec, &ectx);
 	return ret;
 }
 
@@ -253,8 +258,7 @@ static const RzCmdDescHelp pdd_usage = {
 	.summary = "Core plugin for jsdec",
 };
 
-
-//static_description_no_args(cmd_pdd_star,"decompiled code is returned to rizin as comment (via CCu)");
+// static_description_no_args(cmd_pdd_star,"decompiled code is returned to rizin as comment (via CCu)");
 static_description_no_args(pdd, "decompile current function");
 static_description_no_args(pddt, "lists the supported architectures");
 static_description_no_args(pddc, "decompiled code is returned to rizin as 'file:line code' (via CL)");

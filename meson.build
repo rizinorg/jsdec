@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 Giovanni Dante Grazioli <deroad@libero.it>
+# SPDX-License-Identifier: BSD-3-Clause
+
 project('jsdec', 'c', meson_version: '>=0.55.0')
 
 cc = meson.get_compiler('c')
@@ -10,6 +13,7 @@ jsdec_incs = ['.', 'c']
 jsdec_c_args = []
 jsdec_src = [
     'c' / 'jsdec.c',
+    'c' / 'base64.c',
 ]
 jsdec_deps = [
   libquickjs_dep,
