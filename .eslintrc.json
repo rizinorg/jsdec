@@ -36,6 +36,7 @@
         "rizin": true,
         "atob": true,
         "btoa": true,
+        "unit": true,
         "console": true
     }
 }

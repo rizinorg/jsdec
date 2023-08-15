@@ -82,9 +82,10 @@ add_project_arguments(
   language: 'c',
 )
 
-quickjs = library('quickjs', sources,
+quickjs = static_library('quickjs', sources,
   dependencies: [threads_dep, dl_dep, m_dep],
-  install: true,
+  implicit_include_directories: false,
+  install: false,
 )
 quickjs_dep = declare_dependency(
   link_with: quickjs,

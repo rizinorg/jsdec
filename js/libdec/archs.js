@@ -1,21 +1,34 @@
-// SPDX-FileCopyrightText: 2017-2021 Giovanni Dante Grazioli <deroad@libero.it>
+// SPDX-FileCopyrightText: 2017-2023 Giovanni Dante Grazioli <deroad@libero.it>
 // SPDX-License-Identifier: BSD-3-Clause
 
-(function() { // lgtm [js/useless-expression]
-	return {
-		'6502': require('libdec/arch/6502'),
-		'8051': require('libdec/arch/8051'),
-		arm: require('libdec/arch/arm'),
-		avr: require('libdec/arch/avr'),
-		dalvik: require('libdec/arch/dalvik'),
-		m68k: require('libdec/arch/m68k'),
-		mips: require('libdec/arch/mips'),
-		ppc: require('libdec/arch/ppc'),
-		riscv: require('libdec/arch/riscv'),
-		sh: require('libdec/arch/sh'),
-		sparc: require('libdec/arch/sparc'),
-		v850: require('libdec/arch/v850'),
-		wasm: require('libdec/arch/wasm'),
-		x86: require('libdec/arch/x86')
-	};
-});
+import _6502 from './arch/6502.js';
+import _8051 from './arch/8051.js';
+import arm from './arch/arm.js';
+import avr from './arch/avr.js';
+import dalvik from './arch/dalvik.js';
+import m68k from './arch/m68k.js';
+import mips from './arch/mips.js';
+import ppc from './arch/ppc.js';
+import riscv from './arch/riscv.js';
+import sh from './arch/sh.js';
+import sparc from './arch/sparc.js';
+import v850 from './arch/v850.js';
+import wasm from './arch/wasm.js';
+import x86 from './arch/x86.js';
+
+export default {
+	'6502': _6502,
+	'8051': _8051,
+	arm: arm,
+	avr: avr,
+	dalvik: dalvik,
+	m68k: m68k,
+	mips: mips,
+	ppc: ppc,
+	riscv: riscv,
+	sh: sh,
+	sparc: sparc,
+	v850: v850,
+	wasm: wasm,
+	x86: x86
+};
