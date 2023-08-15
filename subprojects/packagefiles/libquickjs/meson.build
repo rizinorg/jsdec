@@ -5,7 +5,6 @@ project('quickjs', 'c',
 cc = meson.get_compiler('c')
 
 have_msvc = cc.get_id() == 'msvc'
-have_emscripten = cc.get_define('EMSCRIPTEN') != ''
 
 threads_dep = dependency('threads')
 dl_dep = cc.find_library('dl', required: false)
@@ -48,10 +47,9 @@ cdata.set('CONFIG_BIGNUM', get_option('bignum'))
 atomics = false
 opt = get_option('atomics')
 if not opt.disabled()
-  supported = not (have_msvc or have_emscripten)
   if opt.auto()
-    atomics = supported
-  elif supported
+    atomics = not have_msvc
+  elif not have_msvc
     atomics = true
   else
     error('Atomics support was requested but is not available')
@@ -62,10 +60,9 @@ cdata.set('CONFIG_ATOMICS', atomics)
 stack_check = false
 opt = get_option('stack_check')
 if not opt.disabled()
-  supported = not (have_msvc or have_emscripten)
   if opt.auto()
-    stack_check = supported
-  elif supported
+    stack_check = not have_msvc
+  elif not have_msvc
     stack_check = true
   else
     error('Stack limitation was requested but is not available')

@@ -29,8 +29,13 @@
 	"no-control-regex": "warn"
     },
     "globals": {
+        "process": true,
+        "BigInt": true,
+        "Global": true,
         "Limits": true,
         "rizin": true,
+        "atob": true,
+        "btoa": true,
         "console": true
     }
 }
