@@ -5,4 +5,4 @@ set -e
 npm install -s eslint
 
 ## NPM test
-find ./libdec -type f -name "*.js" | xargs node_modules/.bin/eslint -c ./.eslintrc.json
+find ./js -type f -name "*.js" | xargs node_modules/.bin/eslint -c ./.eslintrc.json

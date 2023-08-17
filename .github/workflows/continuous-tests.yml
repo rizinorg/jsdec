@@ -15,23 +15,22 @@ jobs:
         with:
           node-version: '16'
       - name: eslint
-        run: chmod +x .ci-scripts/ci-eslint.sh && .ci-scripts/ci-eslint.sh ${GITHUB_REF##*/}
+        run: chmod +x .ci-scripts/ci-eslint.sh && .ci-scripts/ci-eslint.sh
 
   tests:
     name: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Checkout jsdec-test
-        uses: actions/checkout@v3
       - name: tests
-        run: chmod +x .ci-scripts/ci-tests.sh && .ci-scripts/ci-tests.sh ${GITHUB_REF##*/}
+        run: chmod +x .ci-scripts/ci-tests.sh && .ci-scripts/ci-tests.sh "${{ github.ref_name }}"
 
   licenses:
-    name: licenses
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-    - name: REUSE Compliance Check
-      uses: fsfe/reuse-action@v1.1
+    - name: Reuse Compliance Check
+      uses: fsfe/reuse-action@v2
+      with:
+        args: --suppress-deprecation lint

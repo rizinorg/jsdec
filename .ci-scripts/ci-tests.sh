@@ -1,24 +1,17 @@
 #!/bin/bash
 set -e
 
+sudo apt update > /dev/null
+sudo apt -y install meson ninja-build
+
 CI_BRANCH="$1"
+CI_JSDEC="$PWD"
 
-echo "Branch: $CI_BRANCH"
-make --no-print-directory testbin -C p
-ERRORED=$?
-if [ "$ERRORED" == "1" ]; then
-	exit $ERRORED
-fi
+echo "CI_BRANCH: $CI_BRANCH"
+echo "CI_JSDEC:  $CI_JSDEC"
 
-## jsdec-test
-cd ..
-CI_WORKDIR=$(pwd)
-echo "Work dir: $CI_WORKDIR"
-
-rm -rf jsdec-test >/dev/null 2>&1 || echo "no need to clean.."
-git clone --branch "$CI_BRANCH" --depth 1 https://github.com/rizinorg/jsdec-test || git clone --depth 1 https://github.com/rizinorg/jsdec-test
-cd jsdec-test
+rm -rf tests >/dev/null 2>&1 || echo "no need to clean.."
+git clone --branch "$CI_BRANCH" --depth 1 https://github.com/rizinorg/jsdec-test tests || git clone --depth 1 https://github.com/rizinorg/jsdec-test tests
+cd tests
 chmod +x testall.sh
-./testall.sh "$CI_WORKDIR/jsdec" travis
-ERRORED=$?
-cd ..
+./testall.sh "$CI_JSDEC" travis
