@@ -6,49 +6,47 @@ Duktape APIs: https://duktape.org/api.html
 
 ## Extending jsdec arch
 
-First of all when you need to add a new architecture, you need to create a new `.js` file inside `libdec/arch/`.
+First of all when you need to add a new architecture, you need to create a new `.js` file inside `js/libdec/arch/`.
 
-For example `libdec/arch/arch9999.js` and it needs to follow the minimal base javascript template:
+For example `js/libdec/arch/arch9999.js` and it needs to follow the minimal base javascript template:
 ```js
-(function() { // lgtm [js/useless-expression]
-    const Base = require('libdec/core/base');
-    const Variable = require('libdec/core/variable');
-    const Extra = require('libdec/core/extra');
-    return {
-        instructions: {
-            add: function(instr, context, instructions) {
-                return Base.add(instr.parsed.opd[0], instr.parsed.opd[1], instr.parsed.opd[2]);
-            },
-            nop: function() {
-                return Base.nop();
-            },
-            invalid: function(instr, context, instructions) {
-                return Base.nop();
-            }
+import Base from '../core/base.js';
+import Variable from '../core/variable.js';
+import Extra from '../core/extra.js';
+return {
+    instructions: {
+        add: function(instr, context, instructions) {
+            return Base.add(instr.parsed.opd[0], instr.parsed.opd[1], instr.parsed.opd[2]);
         },
-        parse: function(assembly) {
-            var tokens = assembly.trim().split(' ');
-            return { mnem: tokens.shift(), opd: tokens };
+        nop: function() {
+            return Base.nop();
         },
-        context: function() {
-            return { cond: { a: '?', b: '?' } };
-        },
-        preanalisys: function(instructions, context) {},
-        postanalisys: function(instructions, context) {},
-        localvars: function(context) {
-            return [];
-        },
-        globalvars: function(context) {
-            return [];
-        },
-        arguments: function(context) {
-            return [];
-        },
-        returns: function(context) {
-            return 'void';
+        invalid: function(instr, context, instructions) {
+            return Base.nop();
         }
-    };
-});
+    },
+    parse: function(assembly) {
+        var tokens = assembly.trim().split(' ');
+        return { mnem: tokens.shift(), opd: tokens };
+    },
+    context: function() {
+        return { cond: { a: '?', b: '?' } };
+    },
+    preanalisys: function(instructions, context) {},
+    postanalisys: function(instructions, context) {},
+    localvars: function(context) {
+        return [];
+    },
+    globalvars: function(context) {
+        return [];
+    },
+    arguments: function(context) {
+        return [];
+    },
+    returns: function(context) {
+        return 'void';
+    }
+};
 ```
 After saving the new arch (`arch9999.js` in the example), you need to add this arch to the file `libdec/Archs.js`.
 
@@ -56,13 +54,16 @@ The new architecture needs to have the same name as the cmd `e asm.arch`, becaus
 
 For example:
 ```js
-(function() {
-    return {
-        arm: require('libdec/arch/arm'),
-        arch9999: require('libdec/arch/arch9999'),
-        x86: require('libdec/arch/x86')
-    };
-});
+
+import arm from './arch/arm.js';
+import x86 from './arch/x86.js';
+import arch9999 from './arch/arch9999.js';
+
+export default {
+    arm: arm,
+    arch9999: arch9999,
+    x86: x86
+};
 ```
 
 ## Codebase:
