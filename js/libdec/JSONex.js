@@ -11,16 +11,6 @@ var json_parse = function(options) {
 	// a JSON parser in other languages.
 	// We are defining the function inside of another function to avoid creating
 	// global variables.
-	// Default options one can override by passing options to the parse()
-	var _options = {
-		"strict": false, // not being strict means do not generate syntax errors for "duplicate key"
-	};
-	// If there are options, then use them to override the default _options
-	if (options !== undefined && options !== null) {
-		if (options.strict === true) {
-			_options.strict = true;
-		}
-	}
 	var at, // The index of the current character
 		ch, // The current character
 		escapee = {
@@ -207,9 +197,6 @@ var json_parse = function(options) {
 					key = string();
 					white();
 					next(':');
-					if (_options.strict === true && Object.hasOwnProperty.call(object, key)) {
-						error('Duplicate key "' + key + '"');
-					}
 					object[key] = value();
 					white();
 					if (ch === '}') {
