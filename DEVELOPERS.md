@@ -1,8 +1,6 @@
 # Developing on jsdec
 
-jsdec is mostly written in javascript and the engine is duktape.
-
-Duktape APIs: https://duktape.org/api.html
+`jsdec` is written in javascript uses [QuickJS](https://bellard.org/quickjs/).
 
 ## Extending jsdec arch
 
