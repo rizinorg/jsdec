@@ -70,12 +70,11 @@ if not opt.disabled()
 endif
 cdata.set('CONFIG_STACK_CHECK', stack_check)
 
-install_headers(headers, subdir: 'quickjs')
-
 configure_file(
   output: 'config.h',
   configuration: cdata,
 )
+
 add_project_arguments(
   have_msvc ? '/FI' : '-include', meson.current_build_dir() / 'config.h',
   '-D_GNU_SOURCE=1',
