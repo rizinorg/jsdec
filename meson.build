@@ -19,10 +19,6 @@ jsdec_deps = [
   libquickjs_dep,
 ]
 
-if get_option('standalone')
-  add_project_arguments('-DJSDEC_STANDALONE', language: 'c')
-endif
-
 modjs_gen = executable('modjs_gen', 'tools' / 'modjs_gen.c',
   dependencies: [],
   include_directories: [],
