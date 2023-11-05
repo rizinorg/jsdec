@@ -15,16 +15,14 @@ Requires [rizin](https://github.com/rizinorg/rizin).
 
 If you want to install in the HOME folder or in other non standard paths, just
 set the `prefix` to a different value
- - Run `cd p`
- - Run ``meson --prefix=~/.local build``
+ - Run ``meson setup build --prefix=~/.local``
  - Run `ninja -C build install`
 
 # Install system wide
 
 Follow the following steps to install jsdec
  - clone this repository
- - Run `cd p`
- - Run `meson --prefix=/usr build` to create the build folder
+ - Run `meson setup build --prefix=/usr` to create the build folder
  - Run `ninja -C build install` to build the shared library and to install it 
 
 # Usage
