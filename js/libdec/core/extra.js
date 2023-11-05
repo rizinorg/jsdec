@@ -120,7 +120,10 @@ const _find = {
 			var db = Global().argdb;
 			for (var k in db) {
 				if (_replace.call(db[k].name.replace(/^_+/, '')) == name) {
-					return parseInt(db[k].count.toString());
+					if (db[k].count) {
+						return parseInt(db[k].count.toString());
+					}
+					return db[k].args.length;
 				}
 			}
 		}
