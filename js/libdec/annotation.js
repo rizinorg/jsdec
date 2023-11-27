@@ -136,6 +136,9 @@ export default {
         /* variables */
         for (i = context.variables.length - 1, old = 0; i >= 0; i--) {
             it = context.variables[i];
+            if (!it) {
+                continue;
+            }
             pos = it.type.match(_re_types) ? -1 : line.str.search(new RegExp('\\b' + it.type + '\\b'));
             if (pos >= 0 && !(pos >= string_beg && pos <= string_end)) {
                 a.push(new Annotation(current + pos, it.type.length, it.type, null, "syntax_highlight", "datatype"));
