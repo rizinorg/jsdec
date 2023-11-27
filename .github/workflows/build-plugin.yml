@@ -1,0 +1,25 @@
+name: build-plugin
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+
+
+# Automatically cancel any previous workflow on new push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: sudo apt -y install meson ninja-build
+      - name: build & run the plugin
+        run: bash .ci-scripts/ci-build-linux.sh "${{ github.ref_name }}"

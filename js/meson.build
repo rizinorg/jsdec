@@ -10,7 +10,7 @@ if get_option('standalone')
     build_always_stale: true,
     output : 'bytecode.h',
     input : jsdec_testsuite,
-    command : [qjsc, '@INPUT@', '-m', '-N', 'main_bytecode', '-c', '-o', '@OUTPUT@'],
+    command : [qjsc, '-m', '-N', 'main_bytecode', '-c', '-o', '@OUTPUT@', '@INPUT@'],
   )
 else
   bytecode_h = custom_target(
@@ -18,7 +18,7 @@ else
     build_always_stale: true,
     output : 'bytecode.h',
     input : jsdec_plugin,
-    command : [qjsc, '@INPUT@', '-m', '-N', 'main_bytecode', '-c', '-o', '@OUTPUT@'],
+    command : [qjsc, '-m', '-N', 'main_bytecode', '-c', '-o', '@OUTPUT@', '@INPUT@'],
   )
 endif
 
