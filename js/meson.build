@@ -6,23 +6,26 @@ jsdec_testsuite = 'jsdec-testsuite.js'
 
 if get_option('standalone')
   bytecode_h = custom_target(
-      'bytecode.h',
-      output : 'bytecode.h',
-      input : jsdec_testsuite,
-      command : [qjsc, '@INPUT@', '-m', '-N', 'main_bytecode', '-c', '-o', '@OUTPUT@'],
+    'bytecode.h',
+    build_always_stale: true,
+    output : 'bytecode.h',
+    input : jsdec_testsuite,
+    command : [qjsc, '@INPUT@', '-m', '-N', 'main_bytecode', '-c', '-o', '@OUTPUT@'],
   )
 else
   bytecode_h = custom_target(
-      'bytecode.h',
-      output : 'bytecode.h',
-      input : jsdec_plugin,
-      command : [qjsc, '@INPUT@', '-m', '-N', 'main_bytecode', '-c', '-o', '@OUTPUT@'],
+    'bytecode.h',
+    build_always_stale: true,
+    output : 'bytecode.h',
+    input : jsdec_plugin,
+    command : [qjsc, '@INPUT@', '-m', '-N', 'main_bytecode', '-c', '-o', '@OUTPUT@'],
   )
 endif
 
 bytecode_mod_h = custom_target(
-    'bytecode_mod.h',
-    output : 'bytecode_mod.h',
-    input : bytecode_h,
-    command : [modjs_gen, '@INPUT@', '@OUTPUT@'],
+  'bytecode_mod.h',
+  build_always_stale: true,
+  output : 'bytecode_mod.h',
+  input : bytecode_h,
+  command : [modjs_gen, '@INPUT@', '@OUTPUT@'],
 )
