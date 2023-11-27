@@ -879,6 +879,9 @@ var _arm = {
         'b.lt': function(instr, context) {
             return _conditional(instr, context, 'LT');
         },
+        'b.le': function(instr, context) {
+            return _conditional(instr, context, 'LE');
+        },
         'b.ne': function(instr, context) {
             return _conditional(instr, context, 'NE');
         },
