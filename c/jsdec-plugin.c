@@ -81,7 +81,7 @@ static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 	JSValue ops = JS_NewArray(ctx);
 	st64 op_idx = 0;
 
-	RzPVector *vec = rz_core_analysis_bytes(core, core->block, core->blocksize, 0);
+	RzPVector *vec = rz_core_analysis_bytes(core, core->offset, core->block, core->blocksize, 0);
 	rz_pvector_foreach (vec, it) {
 		if (!it || !*it) {
 			continue;
