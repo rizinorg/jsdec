@@ -81,8 +81,11 @@ static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 	JSValue ops = JS_NewArray(ctx);
 	st64 op_idx = 0;
 
-	RzPVector *vec = rz_core_analysis_bytes(core, core->offset, core->block, core->blocksize, 0);
-	rz_pvector_foreach (vec, it) {
+	RzIterator *iter = rz_core_analysis_bytes(core, core->offset, core->block, core->blocksize, 0);
+	if (!iter) {
+		return ops;
+	}
+	rz_iterator_foreach (iter, it) {
 		if (!it || !*it) {
 			continue;
 		}
@@ -94,7 +97,7 @@ static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 		JS_SetPropertyInt64(ctx, ops, op_idx, op);
 		op_idx++;
 	}
-	rz_pvector_free(vec);
+	rz_iterator_free(iter);
 	return ops;
 }
 
