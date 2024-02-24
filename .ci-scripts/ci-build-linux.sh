@@ -17,7 +17,7 @@ wget -O "rizin.tar.xz" "https://github.com/rizinorg/rizin/releases/download/$CI_
 tar xf "rizin.tar.xz"
 cd "rizin-$CI_RZ_VERSION"
 
-meson --buildtype=release -Denable_tests=false build
+meson --buildtype=release -Denable_tests=false --prefix=~/.local build
 sudo ninja -C build install
 
 # cleanup
