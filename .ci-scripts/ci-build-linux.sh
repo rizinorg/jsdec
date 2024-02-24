@@ -17,7 +17,7 @@ wget -O "rizin.tar.xz" "https://github.com/rizinorg/rizin/releases/download/$CI_
 tar xf "rizin.tar.xz"
 cd "rizin-$CI_RZ_VERSION"
 
-meson --buildtype=release -Denable_tests=false build
+meson setup --buildtype=release -Denable_tests=false build
 sudo ninja -C build install
 
 # cleanup
@@ -28,8 +28,8 @@ rm -rf "rizin-*"
 cd "$CI_JSDEC"
 
 # build jsdec and install in the rizin dir.
-meson --buildtype=release -Dstandalone=false build
-sudo ninja -v -C build install
+meson setup --buildtype=release -Dstandalone=false build
+sudo ninja -C build install
 
 # check if it was installed correctly and try to run it.
 HAS_JSDEC=$(rizin -Qc "Lc" | grep jsdec)
@@ -43,5 +43,6 @@ OUTPUT=$(rizin -Qc 'af ; pdd' /bin/ls)
 CHECK=$(echo -e "$OUTPUT" | grep "jsdec pseudo code output")
 echo -e "$OUTPUT"
 if [ -z "$CHECK" ]; then
+	echo "rizin failed to exec jsdec."
 	exit 1
 fi

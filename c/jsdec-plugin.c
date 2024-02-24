@@ -77,7 +77,6 @@ static JSValue js_analysis_bytes(JSContext *ctx, RzCore *core, RzAnalysisBytes *
 
 static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 	RzAnalysisBytes *ab;
-	void **it;
 	JSValue ops = JS_NewArray(ctx);
 	st64 op_idx = 0;
 
@@ -85,12 +84,8 @@ static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 	if (!iter) {
 		return ops;
 	}
-	rz_iterator_foreach (iter, it) {
-		if (!it || !*it) {
-			continue;
-		}
-		ab = *it;
-		if (!ab->op || !strcmp(ab->opcode, "nop")) {
+	rz_iterator_foreach (iter, ab) {
+		if (!ab || !ab->op || !strcmp(ab->opcode, "nop")) {
 			continue;
 		}
 		JSValue op = js_analysis_bytes(ctx, core, ab);
