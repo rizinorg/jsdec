@@ -75,7 +75,7 @@ typedef struct JSRefCountHeader {
 } JSRefCountHeader;
 
 
-#ifndef INFINITE
+#ifndef INFINITY
 #include <float.h>
 #define INFINITY (DBL_MAX + DBL_MAX)
 #endif
