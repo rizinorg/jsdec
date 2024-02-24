@@ -1,2 +1,2 @@
 option('rizin_plugdir', type: 'string', value: '', description: 'rizin install directory')
-option('standalone', type: 'boolean', value: false, description: 'enables/disables building only the standalone executable for testing purposes')
+option('build_type', type: 'combo', choices: ['rizin', 'cutter', 'standalone'], value: 'rizin', description: 'build type; `standalone` for tests, `rizin` as rizin native plugin and `cutter` as cutter native plugin')

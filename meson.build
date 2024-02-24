@@ -28,8 +28,8 @@ modjs_gen = executable('modjs_gen', 'tools' / 'modjs_gen.c',
 
 subdir('js')
 
-if get_option('standalone')
-
+build_type = get_option('build_type')
+if build_type == 'standalone'
   jsdec_src += [
     bytecode_h,
     bytecode_mod_h,
@@ -43,7 +43,31 @@ if get_option('standalone')
     implicit_include_directories: false,
     install: false,
   )
-else
+elif build_type == 'cutter'
+  jsdec_deps += dependency('rz_core')
+  jsdec_deps += dependency('rz_util')
+  jsdec_deps += dependency('rz_cons')
+  jsdec_deps += dependency('rz_config')
+  jsdec_deps += dependency('rz_io')
+
+  jsdec_src += [
+    bytecode_h,
+    bytecode_mod_h,
+    'c' / 'jsdec-cutter.c'
+  ]
+
+  libjsdec = static_library('jsdec', jsdec_src,
+    c_args : jsdec_c_args,
+    dependencies: jsdec_deps,
+    include_directories: include_directories(jsdec_incs),
+    implicit_include_directories: false,
+    install: false,
+  )
+  libjsdec_dep = declare_dependency(
+    link_with: libjsdec,
+    include_directories: include_directories(jsdec_incs),
+  )
+elif build_type == 'rizin'
   # build plugin for Rizin
   rz_core_dep = dependency('rz_core')
   jsdec_deps += rz_core_dep
@@ -73,4 +97,6 @@ else
     install: true,
     install_dir: rizin_plugdir
   )
+else
+  error('Invalid `build_type`.')
 endif

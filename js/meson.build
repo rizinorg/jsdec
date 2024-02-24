@@ -4,7 +4,7 @@
 jsdec_plugin = 'jsdec-plugin.js'
 jsdec_testsuite = 'jsdec-testsuite.js'
 
-if get_option('standalone')
+if get_option('build_type') == 'standalone'
   bytecode_h = custom_target(
     'bytecode.h',
     build_always_stale: true,
