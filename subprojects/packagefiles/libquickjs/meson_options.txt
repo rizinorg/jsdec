@@ -1,0 +1,23 @@
+option('libc',
+  type: 'boolean',
+  value: true,
+  description: 'Include libc bindings'
+)
+
+option('bignum',
+  type: 'boolean',
+  value: true,
+  description: 'Include the code for BigInt/BigFloat/BigDecimal and math mode'
+)
+
+option('atomics',
+  type: 'feature',
+  value: 'auto',
+  description: 'Include Atomics.* operations which depend on the OS threads'
+)
+
+option('stack_check',
+  type: 'feature',
+  value: 'auto',
+  description: 'Enable stack limitation'
+)
