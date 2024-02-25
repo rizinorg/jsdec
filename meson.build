@@ -1,7 +1,7 @@
-# SPDX-FileCopyrightText: 2023 Giovanni Dante Grazioli <deroad@libero.it>
+# SPDX-FileCopyrightText: 2023-2024 Giovanni Dante Grazioli <deroad@libero.it>
 # SPDX-License-Identifier: BSD-3-Clause
 
-project('jsdec', 'c', meson_version: '>=0.55.0')
+project('jsdec', 'c', meson_version: '>=0.56.0')
 
 cc = meson.get_compiler('c')
 
@@ -16,7 +16,7 @@ jsdec_src = [
     'c' / 'base64.c',
 ]
 jsdec_deps = [
-  libquickjs_dep,
+  libquickjs_dep.as_link_whole(),
 ]
 
 modjs_gen = executable('modjs_gen', 'tools' / 'modjs_gen.c',
@@ -78,9 +78,6 @@ elif build_type == 'rizin'
   rizin_plugdir = get_option('rizin_plugdir')
   if rizin_plugdir == ''
     rizin_plugdir = rz_core_dep.get_variable(pkgconfig: 'plugindir', cmake: 'rz_core_PLUGINDIR')
-    plugin_jsdec_dir = join_paths(get_option('prefix'), rizin_plugdir, 'jsdec')
-  else
-    plugin_jsdec_dir = join_paths(rizin_plugdir, 'jsdec')
   endif
 
   jsdec_src += [

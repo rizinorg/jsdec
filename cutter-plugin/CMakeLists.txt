@@ -17,10 +17,10 @@ add_library(jsdec_cutter MODULE
 	JSDecDecompiler.cpp
 )
 
-find_library(JSDecCutter NAMES jsdec PATHS "${JSDEC_BUILD_DIR}")
+find_library(libjsdec NAMES jsdec PATHS "${JSDEC_BUILD_DIR}")
 include_directories("../c")
 
 find_package(Cutter REQUIRED)
 
-target_link_libraries(jsdec_cutter PRIVATE Cutter::Cutter "${JSDecCutter}")
+target_link_libraries(jsdec_cutter PRIVATE Cutter::Cutter "${libjsdec}")
 install(TARGETS jsdec_cutter DESTINATION "${CUTTER_INSTALL_PLUGDIR}")
