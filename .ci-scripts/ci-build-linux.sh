@@ -28,7 +28,7 @@ rm -rf "rizin-*"
 cd "$CI_JSDEC"
 
 # build jsdec and install in the rizin dir.
-meson setup --buildtype=release -Dstandalone=false build
+meson setup --buildtype=release -Dbuild_type=rizin build
 sudo ninja -C build install
 
 # check if it was installed correctly and try to run it.

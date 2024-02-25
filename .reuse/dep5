@@ -46,3 +46,7 @@ License: BSD-3-Clause
 Files: .clang-format
 Copyright: 2021 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
+
+Files: cutter-plugin/CMakeLists.txt
+Copyright: 2024 Giovanni Dante Grazioli <deroad@libero.it>
+License: BSD-3-Clause
