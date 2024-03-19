@@ -1,6 +1,3 @@
-![Build Status](https://github.com/rizinorg/jsdec/workflows/continuous-tests/badge.svg)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/rizinorg/jsdec.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/rizinorg/jsdec/context:javascript)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/rizinorg/jsdec.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/rizinorg/jsdec/alerts/)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 ![jsdec](https://raw.githubusercontent.com/rizinorg/jsdec/master/.github/logo.png)
