@@ -2,8 +2,14 @@
 set -e
 
 CI_BRANCH="$1"
+CI_BRANCH="$1"
 CI_JSDEC="$PWD"
-CI_RZ_VERSION=$(curl -s GET https://api.github.com/repos/rizinorg/rizin/tags\?per_page\=1 | jq -r '.[].name')
+CI_RZ_VERSION=$2
+
+if [ "$2" != "dev" ]; then
+	# master branch always build against latest release of rizin
+	CI_RZ_VERSION=$(curl -s GET https://api.github.com/repos/rizinorg/rizin/tags\?per_page\=1 | jq -r '.[].name')
+fi
 
 echo "CI_BRANCH:       $CI_BRANCH"
 echo "CI_RZ_VERSION:   $CI_RZ_VERSION"
@@ -12,11 +18,19 @@ echo "CI_JSDEC:        $CI_JSDEC"
 # avoid placing rizin in the same folder.
 cd ..
 
-# download the latest tagged rizin version and install it
-wget -O "rizin.tar.xz" "https://github.com/rizinorg/rizin/releases/download/$CI_RZ_VERSION/rizin-src-$CI_RZ_VERSION.tar.xz"
-tar xf "rizin.tar.xz"
-cd "rizin-$CI_RZ_VERSION"
+# download rizin
+if [ "$CI_RZ_VERSION" == "dev" ]; then
+	# dev branch always build against latest commit of rizin
+	wget -O "rizin.tar.gz" "https://github.com/rizinorg/rizin/archive/refs/heads/dev.tar.gz"
+	tar xf "rizin.tar.gz"
+else
+	# master branch always build against latest release of rizin
+	wget -O "rizin.tar.xz" "https://github.com/rizinorg/rizin/releases/download/$CI_RZ_VERSION/rizin-src-$CI_RZ_VERSION.tar.xz"
+	tar xf "rizin.tar.xz"
+fi
 
+# build rizin and install it.
+cd "rizin-$CI_RZ_VERSION"
 meson setup --buildtype=release -Denable_tests=false build
 sudo ninja -C build install
 
