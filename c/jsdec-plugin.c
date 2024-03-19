@@ -99,11 +99,12 @@ static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 static JSValue js_function_bbs(JSContext *ctx, RzCore *core, RzAnalysisFunction *fcn) {
 	JSValue bbs = JS_NewArray(ctx);
 	RzAnalysisBlock *bbi;
-	RzListIter *iter;
+	void **iter;
 	st64 bbs_idx = 0;
 	ut64 old_offset = core->offset;
 	ut64 old_bsize = core->blocksize;
-	rz_list_foreach (fcn->bbs, iter, bbi) {
+	rz_pvector_foreach (fcn->bbs, iter) {
+		bbi = (RzAnalysisBlock *)*iter;
 		rz_core_block_size(core, bbi->size);
 		rz_core_seek(core, bbi->addr, true);
 
