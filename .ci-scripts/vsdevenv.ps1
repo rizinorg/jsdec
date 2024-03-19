@@ -1,7 +1,10 @@
+$bits = $args[0]
 $installationPath = vswhere.exe -latest -property installationPath
-if ($installationPath -and (test-path "$installationPath\Common7\Tools\vsdevcmd.bat")) {
-  & "${env:COMSPEC}" /s /c "`"$installationPath\Common7\Tools\vsdevcmd.bat`" -no_logo && set" | foreach-object {
-    $name, $value = $_ -split '=', 2
-    set-content env:\"$name" $value
-  }
+if (-not $installationPath -or -not (test-path "$installationPath\VC\Auxiliary\Build\vcvars$bits.bat")) {
+  throw "vcvars$bits.bat file not found"
 }
+& "${env:COMSPEC}" /s /c "`"$installationPath\VC\Auxiliary\Build\vcvars$bits.bat`" > nul 2>&1 && set" | . { process {
+  if ($_ -match '^([^=]+)=(.*)') {
+    [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
+  }
+}}
