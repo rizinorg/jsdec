@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt -y install meson ninja-build
       - name: Build & run the plugin
-        run: bash .ci-scripts/ci-build-linux.sh "${{ github.ref_name }}"
+        run: bash .ci-scripts/ci-build-linux.sh "${{ github.event.pull_request.base.ref || github.ref_name }}"
 
   windows-64:
     runs-on: windows-latest
@@ -52,8 +52,8 @@ jobs:
         run: |
           WORKDIR="$PWD"
           cd ..
-          python "$WORKDIR/.ci-scripts/ci-rizin-dl.py" 'rizin-${{ matrix.release }}-{version}.zip'
-          unzip rizin.zip
+          python "$WORKDIR/.ci-scripts/ci-rizin-dl.py" 'rizin-${{ matrix.release }}-{version}.zip' '${{ github.event.pull_request.base.ref || github.ref_name }}'
+          unzip -q rizin.zip
           rm *.zip
           mv rizin* rizin
           cd "$WORKDIR"
