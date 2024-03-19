@@ -2,13 +2,14 @@
 set -e
 
 CI_BRANCH="$1"
-CI_BRANCH="$1"
 CI_JSDEC="$PWD"
 CI_RZ_VERSION=$2
 
-if [ "$2" != "dev" ]; then
+if [ "$CI_BRANCH" != "dev" ]; then
 	# master branch always build against latest release of rizin
 	CI_RZ_VERSION=$(curl -s GET https://api.github.com/repos/rizinorg/rizin/tags\?per_page\=1 | jq -r '.[].name')
+else
+	CI_RZ_VERSION="$CI_BRANCH"
 fi
 
 echo "CI_BRANCH:       $CI_BRANCH"
@@ -19,7 +20,7 @@ echo "CI_JSDEC:        $CI_JSDEC"
 cd ..
 
 # download rizin
-if [ "$CI_RZ_VERSION" == "dev" ]; then
+if [ "$CI_BRANCH" == "dev" ]; then
 	# dev branch always build against latest commit of rizin
 	wget -O "rizin.tar.gz" "https://github.com/rizinorg/rizin/archive/refs/heads/dev.tar.gz"
 	tar xf "rizin.tar.gz"

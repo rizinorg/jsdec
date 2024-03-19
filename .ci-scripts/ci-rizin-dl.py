@@ -3,12 +3,9 @@ import json
 import sys
 import os
 
-file_name = sys.argv[1]
-latest = "master" if len(sys.argv) < 2 else sys.argv[2]
+out_file = "rizin.zip"
 
-_, file_extension = os.path.splitext(file_name)
-out_file = f"rizin{file_extension}"
-print(file_name, out_file)
+latest = "master" if len(sys.argv) < 1 else sys.argv[1]
 
 if latest != "dev":
     # master branch always build against latest release of rizin
@@ -16,8 +13,7 @@ if latest != "dev":
     with urllib.request.urlopen('https://api.github.com/repos/rizinorg/rizin/tags?per_page=1') as f:
         tags = json.load(f)
     latest = tags[0]['name']
-    url = f"https://github.com/rizinorg/rizin/releases/download/{latest}/{file_name}"
-    url = url.format(version=latest)
+    url = f"https://github.com/rizinorg/rizin/archive/refs/tags/{latest}.zip"
 else:
     # dev branch always build against latest commit of rizin
     url = "https://github.com/rizinorg/rizin/archive/refs/heads/dev.zip"

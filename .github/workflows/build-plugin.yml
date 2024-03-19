@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: sudo apt -y install meson ninja-build
-      - name: Build & run the plugin
+      - name: Build & run jsdec as rizin plugin
         run: bash .ci-scripts/ci-build-linux.sh "${{ github.event.pull_request.base.ref || github.ref_name }}"
 
   windows-64:
@@ -44,19 +44,23 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pip install ninja meson
+          pip install ninja meson PyYAML
           choco install pkgconfiglite
           choco install zip
-      - name: Install rizin
+      - name: Fetch & build rizin
         shell: bash
         run: |
           WORKDIR="$PWD"
           cd ..
-          python "$WORKDIR/.ci-scripts/ci-rizin-dl.py" 'rizin-${{ matrix.release }}-{version}.zip' '${{ github.event.pull_request.base.ref || github.ref_name }}'
+          python "$WORKDIR/.ci-scripts/ci-rizin-dl.py" '${{ github.event.pull_request.base.ref || github.ref_name }}'
           unzip -q rizin.zip
           rm *.zip
-          mv rizin* rizin
+          mv rizin* rizin-build
+          cd rizin-build
+          powershell.exe ".\dist\windows\build_windows_installer.ps1 vs2019_static 64 --default-library=shared -Dportable=true"
+          ls ./dist/windows/Output
+          powershell.exe '.\dist\windows\Output\rizin.exe /SP- /SILENT /CURRENTUSER'
           cd "$WORKDIR"
-      - name: Build & run the plugin
-        shell: cmd
-        run: .ci-scripts/ci-build-win.bat x64
+      - name: Build & run jsdec as rizin plugin
+        shell: pwsh
+        run: .ci-scripts\ci-build-win.ps1 64
