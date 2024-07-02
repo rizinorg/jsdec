@@ -1537,6 +1537,9 @@ var _arm = {
         fcvt: function(instr) {
             return Base.cast(instr.parsed.opd[0], instr.parsed.opd[1], instr.parsed.opd[0][0] == 's' ? 'float' : 'double');
         },
+        udf: function() {
+            return Base.nop();
+        },
         invalid: function() {
             return Base.nop();
         }
