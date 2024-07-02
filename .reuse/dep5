@@ -15,7 +15,7 @@ Files: .github/**/*
 Copyright: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
 
-Files: .eslintrc.json
+Files: .eslint.config.js
 Copyright: 2018-2021 Giovanni Dante Grazioli <deroad@libero.it>
 License: BSD-3-Clause
 
