@@ -1547,6 +1547,8 @@ var _arm = {
             asm = orig;
         } else if (asm.match(/aav\.[\da-fA-F]+/)) {
             asm = orig;
+        } else if (asm.match(/data\.[\da-fA-F]+/)) {
+            asm = orig;
         }
         var ret = asm.replace(/(\[|\])/g, ' $1 ').replace(/,/g, ' ');
         ret = ret.replace(/\{|\}/g, ' ').replace(/#/g, ' ');
