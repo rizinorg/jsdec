@@ -1,2 +1,5 @@
 build*/
 subprojects/libquick*/
+node_modules/
+package.json
+package-lock.json
