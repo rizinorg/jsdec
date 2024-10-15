@@ -1,7 +1,13 @@
 # SPDX-FileCopyrightText: 2023-2024 Giovanni Dante Grazioli <deroad@libero.it>
 # SPDX-License-Identifier: BSD-3-Clause
 
-project('jsdec', 'c', meson_version: '>=0.56.0')
+project('jsdec', 'c', meson_version: '>=0.56.0',
+  default_options: [
+    'buildtype=release',
+    'strip=true',
+    'b_vscrt=from_buildtype',
+    'warning_level=1',
+  ])
 
 cc = meson.get_compiler('c')
 
@@ -56,6 +62,13 @@ elif build_type == 'cutter'
     'c' / 'jsdec-cutter.c'
   ]
 
+  if cc.has_argument('-fvisibility=hidden')
+    jsdec_c_args += '-fvisibility=hidden'
+  endif
+  if cc.has_argument('-flto')
+    jsdec_c_args += '-flto'
+  endif
+
   libjsdec = static_library('jsdec', jsdec_src,
     c_args : jsdec_c_args,
     dependencies: jsdec_deps,
@@ -85,6 +98,13 @@ elif build_type == 'rizin'
     bytecode_mod_h,
     'c' / 'jsdec-plugin.c'
   ]
+
+  if cc.has_argument('-fvisibility=hidden')
+    jsdec_c_args += '-fvisibility=hidden'
+  endif
+  if cc.has_argument('-flto')
+    jsdec_c_args += '-flto'
+  endif
 
   shared_library('core_pdd', jsdec_src,
     c_args : jsdec_c_args,
