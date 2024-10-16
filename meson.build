@@ -7,6 +7,7 @@ project('jsdec', 'c', meson_version: '>=0.56.0',
     'strip=true',
     'b_vscrt=from_buildtype',
     'warning_level=1',
+    'c_std=c11'
   ])
 
 cc = meson.get_compiler('c')

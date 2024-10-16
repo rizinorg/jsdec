@@ -5,6 +5,7 @@ project('quickjs-ng', 'c',
     'strip=true',
     'b_vscrt=from_buildtype',
     'warning_level=1',
+    'c_std=c11'
   ]
 )
 
