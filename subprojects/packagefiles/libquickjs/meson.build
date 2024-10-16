@@ -2,7 +2,6 @@ project('quickjs-ng', 'c',
   version: 'v0.6.1',
   default_options: [
     'buildtype=release',
-    'strip=true',
     'b_vscrt=from_buildtype',
     'warning_level=1',
     'c_std=c11'

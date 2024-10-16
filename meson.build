@@ -4,7 +4,6 @@
 project('jsdec', 'c', meson_version: '>=0.56.0',
   default_options: [
     'buildtype=release',
-    'strip=true',
     'b_vscrt=from_buildtype',
     'warning_level=1',
     'c_std=c11'
