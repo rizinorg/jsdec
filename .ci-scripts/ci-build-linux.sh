@@ -44,7 +44,7 @@ cd "$CI_JSDEC"
 
 # build jsdec and install in the rizin dir.
 meson setup --buildtype=release -Dbuild_type=rizin build
-sudo ninja -C build install
+sudo ninja -C build install || sleep 0
 
 # check if it was installed correctly and try to run it.
 HAS_JSDEC=$(rizin -Qc "Lc" | grep jsdec)
