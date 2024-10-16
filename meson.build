@@ -62,13 +62,6 @@ elif build_type == 'cutter'
     'c' / 'jsdec-cutter.c'
   ]
 
-  if cc.has_argument('-fvisibility=hidden')
-    jsdec_c_args += '-fvisibility=hidden'
-  endif
-  if cc.has_argument('-flto')
-    jsdec_c_args += '-flto'
-  endif
-
   libjsdec = static_library('jsdec', jsdec_src,
     c_args : jsdec_c_args,
     dependencies: jsdec_deps,
