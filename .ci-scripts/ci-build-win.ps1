@@ -29,5 +29,5 @@ $env:LDFLAGS = "-LC:$env:HOMEPATH\AppData\Local\Programs\rizin\lib"
 
 Invoke-NativeCommand meson setup --buildtype=release --prefix="$rizin_path" build
 Invoke-NativeCommand ninja -C build install
-rizin.exe -e log.level=2 -Qc "Lc"
-rizin.exe -Qc "af ; pdd" "C:\Windows\System32\calc.exe"
+rizin.exe -e log.level=2 -qc "Lc"
+rizin.exe -qc "af ; pdd" "C:\Windows\System32\calc.exe"
