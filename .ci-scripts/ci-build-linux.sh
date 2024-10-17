@@ -52,7 +52,8 @@ sudo ninja -C build install || sleep 0
 HAS_JSDEC=$(rizin -Qc "Lc" | grep jsdec)
 if [ -z "$HAS_JSDEC" ]; then
 	echo "rizin failed to load jsdec."
-	rizin -e log.level=2 -Qc "Lc" | grep jsdec || sleep 0
+	rizin -e log.level=1 -Qc "Lc"
+	rizin -hh
 	exit 1
 fi
 
