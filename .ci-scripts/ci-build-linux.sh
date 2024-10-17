@@ -43,18 +43,19 @@ rm -rf "rizin-*"
 cd "$CI_JSDEC"
 
 # build jsdec and install in the rizin dir.
-meson setup --buildtype=release -Dbuild_type=rizin build
-sudo ninja -C build install
+meson setup --buildtype=release -Dbuild_type=rizin --prefix=~/.local build
+sudo ninja -C build install || sleep 0
 
 # check if it was installed correctly and try to run it.
-HAS_JSDEC=$(rizin -Qc "Lc" | grep jsdec)
+HAS_JSDEC=$(rizin -qc "Lc" | grep jsdec)
 if [ -z "$HAS_JSDEC" ]; then
 	echo "rizin failed to load jsdec."
-	rizin -e log.level=2 -Qc "Lc" | grep jsdec || sleep 0
+	rizin -e log.level=0 -qc "Lc"
+	rizin -hh
 	exit 1
 fi
 
-OUTPUT=$(rizin -Qc 'af ; pdd' /bin/ls)
+OUTPUT=$(rizin -qc 'af ; pdd' /bin/ls)
 CHECK=$(echo -e "$OUTPUT" | grep "jsdec pseudo code output")
 echo -e "$OUTPUT"
 if [ -z "$CHECK" ]; then

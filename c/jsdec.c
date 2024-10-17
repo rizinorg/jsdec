@@ -51,10 +51,6 @@ static void print_jsval(JSValue val) {
 		errorf("JS_IsNumber\n");
 	} else if(JS_IsBigInt(NULL, val)) {
 		errorf("JS_IsBigInt\n");
-	} else if(JS_IsBigFloat(val)) {
-		errorf("JS_IsBigFloat\n");
-	} else if(JS_IsBigDecimal(val)) {
-		errorf("JS_IsBigDecimal\n");
 	} else if(JS_IsBool(val)) {
 		errorf("JS_IsBool\n");
 	} else if(JS_IsNull(val)) {
@@ -104,8 +100,10 @@ static int js_load_module(JSContext *ctx, const uint8_t *bytes, const uint32_t s
 		return 0;
 	}
 
+	//print_jsval(obj);
 	JSValue val = JS_EvalFunction(ctx, obj);
 	if (JS_IsException(val)) {
+		errorf("Error: jsdec thrown an exception when loading a module\n");
 		jsdec_handle_exception(ctx);
 		return 0;
 	}
@@ -194,17 +192,14 @@ jsdec_t *jsdec_new() {
 
 	// initialize all intrisic
 	JS_AddIntrinsicBaseObjects(ctx);
-	JS_AddIntrinsicDate(ctx);
+	JS_AddIntrinsicEval(ctx);
+	JS_AddIntrinsicRegExpCompiler(ctx);
 	JS_AddIntrinsicRegExp(ctx);
 	JS_AddIntrinsicJSON(ctx);
-	JS_AddIntrinsicMapSet(ctx);
+	JS_AddIntrinsicTypedArrays(ctx);
 	JS_AddIntrinsicPromise(ctx);
 	JS_AddIntrinsicBigInt(ctx);
-	JS_AddIntrinsicBigFloat(ctx);
-	JS_AddIntrinsicBigDecimal(ctx);
-	JS_AddIntrinsicOperators(ctx);
-	JS_AddIntrinsicEval(ctx);
-	JS_EnableBignumExt(ctx, 1);
+
 
 	// Setup global objects.
 	JSValue global = JS_GetGlobalObject(ctx);
@@ -223,6 +218,7 @@ jsdec_t *jsdec_new() {
 	JS_FreeValue(ctx, global);
 
 	if (!js_load_all_modules(ctx)) {
+		errorf("Error: failed to load modules\n");
 		JS_FreeContext(ctx);
 		JS_FreeRuntime(rt);
 		return NULL;

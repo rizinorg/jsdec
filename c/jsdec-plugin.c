@@ -337,7 +337,7 @@ RzCorePlugin rz_core_plugin_jsdec = {
 #ifdef _MSC_VER
 #define _RZ_API __declspec(dllexport)
 #else
-#define _RZ_API
+#define _RZ_API __attribute__((visibility("default")))
 #endif
 
 #ifndef CORELIB
