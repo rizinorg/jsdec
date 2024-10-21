@@ -40,30 +40,30 @@ compiler_flags = [
 ]
 
 if cc.get_id() == 'msvc'
-    compiler_flags += '-Wno-unsafe-buffer-usage'
-    compiler_flags += '-Wno-sign-conversion'
-    compiler_flags += '-Wno-nonportable-system-include-path'
-    compiler_flags += '-Wno-implicit-int-conversion'
-    compiler_flags += '-Wno-shorten-64-to-32'
-    compiler_flags += '-Wno-reserved-macro-identifier'
-    compiler_flags += '-Wno-reserved-identifier'
-    compiler_flags += '-Wdeprecated-declarations'
-    compiler_flags += '/experimental:c11atomics'
-    compiler_flags += '/wd4018' # -Wno-sign-conversion
-    compiler_flags += '/wd4061' # -Wno-implicit-fallthrough
-    compiler_flags += '/wd4100' # -Wno-unused-parameter
-    compiler_flags += '/wd4200' # -Wno-zero-length-array
-    compiler_flags += '/wd4242' # -Wno-shorten-64-to-32
-    compiler_flags += '/wd4244' # -Wno-shorten-64-to-32
-    compiler_flags += '/wd4245' # -Wno-sign-compare
-    compiler_flags += '/wd4267' # -Wno-shorten-64-to-32
-    compiler_flags += '/wd4388' # -Wno-sign-compare
-    compiler_flags += '/wd4389' # -Wno-sign-compare
-    compiler_flags += '/wd4710' # Function not inlined
-    compiler_flags += '/wd4711' # Function was inlined
-    compiler_flags += '/wd4820' # Padding added after construct
-    compiler_flags += '/wd4996' # -Wdeprecated-declarations
-    compiler_flags += '/wd5045' # Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+  compiler_flags += '-Wno-unsafe-buffer-usage'
+  compiler_flags += '-Wno-sign-conversion'
+  compiler_flags += '-Wno-nonportable-system-include-path'
+  compiler_flags += '-Wno-implicit-int-conversion'
+  compiler_flags += '-Wno-shorten-64-to-32'
+  compiler_flags += '-Wno-reserved-macro-identifier'
+  compiler_flags += '-Wno-reserved-identifier'
+  compiler_flags += '-Wdeprecated-declarations'
+  compiler_flags += '/experimental:c11atomics'
+  compiler_flags += '/wd4018' # -Wno-sign-conversion
+  compiler_flags += '/wd4061' # -Wno-implicit-fallthrough
+  compiler_flags += '/wd4100' # -Wno-unused-parameter
+  compiler_flags += '/wd4200' # -Wno-zero-length-array
+  compiler_flags += '/wd4242' # -Wno-shorten-64-to-32
+  compiler_flags += '/wd4244' # -Wno-shorten-64-to-32
+  compiler_flags += '/wd4245' # -Wno-sign-compare
+  compiler_flags += '/wd4267' # -Wno-shorten-64-to-32
+  compiler_flags += '/wd4388' # -Wno-sign-compare
+  compiler_flags += '/wd4389' # -Wno-sign-compare
+  compiler_flags += '/wd4710' # Function not inlined
+  compiler_flags += '/wd4711' # Function was inlined
+  compiler_flags += '/wd4820' # Padding added after construct
+  compiler_flags += '/wd4996' # -Wdeprecated-declarations
+  compiler_flags += '/wd5045' # Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
 endif
 
 # required on linux, but ignored by windows
