@@ -23,15 +23,15 @@ jobs:
       - name: Build & run jsdec as rizin plugin
         run: bash .ci-scripts/ci-build-linux.sh "${{ github.event.pull_request.base.ref || github.ref_name }}"
 
-  windows-64:
-    runs-on: windows-latest
-    name: ${{ matrix.release }}
+  windows-latest:
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        release:
-          - "windows-static"
-          - "windows-shared64"
+        os:
+          - "windows-latest"
+          - "windows-2019"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
