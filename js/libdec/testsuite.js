@@ -52,7 +52,7 @@ function _new_data(issue) {
         // to override this is required to be converted to just an integer.
         bits = parseInt(bits.toString());
     }
-    return {
+    var testdata = {
         arch: issue.arch,
         bits: bits,
         graph: issue.agj ? _fixup_old_graph(issue.agj) : (issue.graph || []),
@@ -68,6 +68,9 @@ function _new_data(issue) {
         },
         argdb: issue.afcfj
     };
+    testdata.xrefs.arguments.stack = testdata.xrefs.arguments.stack || [];
+    testdata.xrefs.arguments.reg = testdata.xrefs.arguments.reg || [];
+    return testdata;
 }
 
 export default function(filename) {
