@@ -11,19 +11,17 @@ project('jsdec', 'c', meson_version: '>=0.56.0',
 
 cc = meson.get_compiler('c')
 
-libquickjs_proj = subproject('libquickjs', default_options: ['default_library=static'])
-libquickjs_dep = libquickjs_proj.get_variable('quickjs_dep')
-qjsc = libquickjs_proj.get_variable('qjsc')
-
 jsdec_incs = ['.', 'c']
 jsdec_c_args = []
 jsdec_src = [
     'c' / 'jsdec.c',
     'c' / 'base64.c',
 ]
-jsdec_deps = [
-  libquickjs_dep.as_link_whole(),
-]
+
+libquickjs_proj = subproject('libquickjs', default_options: ['default_library=static'])
+libquickjs_dep = libquickjs_proj.get_variable('quickjs_dep')
+
+jsdec_deps = [ libquickjs_dep ]
 
 modjs_gen = executable('modjs_gen', 'tools' / 'modjs_gen.c',
   dependencies: [],
@@ -32,7 +30,24 @@ modjs_gen = executable('modjs_gen', 'tools' / 'modjs_gen.c',
   install: false,
 )
 
+qjsc = executable('qjsc', 'tools' / 'qjsc_mod.c',
+  dependencies: libquickjs_dep,
+  c_args: ['-D_GNU_SOURCE=1'],
+  include_directories: [],
+  implicit_include_directories: false,
+  install: false,
+)
+
 subdir('js')
+
+jsdec_link_args = []
+foreach flag: [
+    '-Wl,--exclude-libs,ALL',
+  ]
+  if cc.has_link_argument(flag)
+    jsdec_link_args += flag
+  endif
+endforeach
 
 build_type = get_option('build_type')
 if build_type == 'standalone'
@@ -45,6 +60,8 @@ if build_type == 'standalone'
   jsdec_standalone = executable('jsdec-standalone', jsdec_src,
     c_args : jsdec_c_args,
     dependencies: jsdec_deps,
+    link_args: jsdec_link_args,
+    gnu_symbol_visibility: 'hidden',
     include_directories: include_directories(jsdec_incs),
     implicit_include_directories: false,
     install: false,
@@ -66,6 +83,8 @@ elif build_type == 'cutter'
     c_args : jsdec_c_args,
     dependencies: jsdec_deps,
     include_directories: include_directories(jsdec_incs),
+    link_args: jsdec_link_args,
+    gnu_symbol_visibility: 'hidden',
     implicit_include_directories: false,
     install: false,
   )
@@ -103,6 +122,8 @@ elif build_type == 'rizin'
     c_args : jsdec_c_args,
     dependencies: jsdec_deps,
     include_directories: include_directories(jsdec_incs),
+    link_args: jsdec_link_args,
+    gnu_symbol_visibility: 'hidden',
     implicit_include_directories: false,
     install: true,
     install_dir: rizin_plugdir

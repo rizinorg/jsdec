@@ -79,7 +79,7 @@ export default (function() {
 		var functions = rz_sanitize(rzpipe.string('aflj'), '[]');
 		var classes = rz_sanitize(rzpipe.string('icj'), '[]');
 		var data = JSONex.stringify(rizin.graph());
-		var farguments = rz_sanitize(rzpipe.string('afvj', true), '{"sp":[],"bp":[],"reg":[]}');
+		var farguments = rz_sanitize(rzpipe.string('afvlj', true), '{"stack":[],"reg":[]}');
 		var arch = rz_sanitize(rzpipe.string('e asm.arch'), '');
 		var archbits = rz_sanitize(rzpipe.string('e asm.bits'), '32');
 		var database = rz_sanitize(rzpipe.custom('afsj @@i', null, merge_arrays), '[]');
@@ -216,11 +216,13 @@ export default (function() {
 				strings: (isfast ? [] : rzpipe.json('Cslj', [])),
 				functions: (isfast ? [] : rzpipe.json('aflj', [])),
 				classes: rzpipe.json('icj', []),
-				arguments: rzpipe.json('afvj', {
+				arguments: rzpipe.json('afvlj', {
 					"stack": [],
 					"reg": []
 				})
 			};
+			this.xrefs.arguments.stack = this.xrefs.arguments.stack || [];
+			this.xrefs.arguments.reg = this.xrefs.arguments.reg || [];
 			this.graph = rizin.graph();
 			this.argdb = rzpipe.custom('afsj @@i', null, merge_arrays_json);
 		},

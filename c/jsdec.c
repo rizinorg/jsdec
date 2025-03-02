@@ -199,6 +199,7 @@ jsdec_t *jsdec_new() {
 	JS_AddIntrinsicTypedArrays(ctx);
 	JS_AddIntrinsicPromise(ctx);
 	JS_AddIntrinsicBigInt(ctx);
+	JS_AddIntrinsicDate(ctx);
 
 
 	// Setup global objects.
