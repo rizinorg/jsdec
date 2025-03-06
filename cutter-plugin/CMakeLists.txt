@@ -17,8 +17,6 @@ add_library(jsdec_cutter MODULE
 	JSDecDecompiler.cpp
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--exclude-libs,ALL")
-
 find_library(libjsdec NAMES jsdec PATHS "${JSDEC_BUILD_DIR}")
 include_directories("../include")
 
