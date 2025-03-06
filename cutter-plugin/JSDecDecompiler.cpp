@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-#include "../c/jsdec-cutter.h"
+#include "jsdec-cutter.h"
 
 JSDecDecompiler::JSDecDecompiler(QObject *parent)
     : Decompiler("jsdec", "jsdec", parent) {

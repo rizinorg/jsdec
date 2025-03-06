@@ -319,7 +319,7 @@ static RzAnnotatedCode *parse_json(RzStrBuf *sb) {
 	return code;
 }
 
-RzAnnotatedCode *jsdec_as_annotation(RzCore *core, ut64 addr) {
+RZ_API RzAnnotatedCode *jsdec_as_annotation(RzCore *core, ut64 addr) {
 	ExecContext ectx;
 	ectx.core = core;
 	ectx.anno = rz_strbuf_new("");

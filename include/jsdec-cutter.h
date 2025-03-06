@@ -10,7 +10,7 @@ extern "C" {
 
 #include <rz_util/rz_annotated_code.h>
 
-RzAnnotatedCode *jsdec_as_annotation(RzCore *core, ut64 addr);
+RZ_API RzAnnotatedCode *jsdec_as_annotation(RzCore *core, ut64 addr);
 
 #ifdef __cplusplus
 }

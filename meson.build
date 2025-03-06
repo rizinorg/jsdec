@@ -11,7 +11,7 @@ project('jsdec', 'c', meson_version: '>=0.56.0',
 
 cc = meson.get_compiler('c')
 
-jsdec_incs = ['.', 'c']
+jsdec_incs = ['.', 'c', 'include']
 jsdec_c_args = []
 jsdec_src = [
     'c' / 'jsdec.c',
@@ -67,6 +67,7 @@ if build_type == 'standalone'
     install: false,
   )
 elif build_type == 'cutter'
+  jsdec_deps = [ libquickjs_dep.as_link_whole() ]
   jsdec_deps += dependency('rz_core')
   jsdec_deps += dependency('rz_util')
   jsdec_deps += dependency('rz_cons')
@@ -79,6 +80,13 @@ elif build_type == 'cutter'
     'c' / 'jsdec-cutter.c'
   ]
 
+  if cc.has_argument('-fvisibility=hidden')
+    jsdec_c_args += '-fvisibility=hidden'
+  endif
+  if cc.has_argument('-flto')
+    jsdec_c_args += '-flto'
+  endif
+
   libjsdec = static_library('jsdec', jsdec_src,
     c_args : jsdec_c_args,
     dependencies: jsdec_deps,
@@ -90,7 +98,7 @@ elif build_type == 'cutter'
   )
   libjsdec_dep = declare_dependency(
     link_with: libjsdec,
-    include_directories: include_directories(jsdec_incs),
+    include_directories: include_directories(['include']),
   )
 elif build_type == 'rizin'
   # build plugin for Rizin
