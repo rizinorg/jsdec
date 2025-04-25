@@ -10,9 +10,11 @@
 
 #include "jsdec-cutter.h"
 
-JSDecDecompiler::JSDecDecompiler(QObject *parent)
-    : Decompiler("jsdec", "jsdec", parent) {
+JSDecDecompiler::JSDecDecompiler(CutterCore *core)
+    : Decompiler("jsdec", "jsdec", core) {
 	task = nullptr;
+	RzCoreLocked c = core->core();
+	jsdec_init_config(c);
 }
 
 void JSDecDecompiler::decompileAt(RVA addr) {

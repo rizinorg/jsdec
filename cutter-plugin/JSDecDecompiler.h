@@ -13,7 +13,7 @@ class JSDecDecompiler: public Decompiler
 		RizinFunctionTask *task;
 
 	public:
-		JSDecDecompiler(QObject *parent = nullptr);
+		JSDecDecompiler(CutterCore *core = nullptr);
 		virtual void decompileAt(RVA addr) override;
 		virtual bool isRunning() override { return task != nullptr; }
 };
