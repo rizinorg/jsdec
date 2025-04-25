@@ -319,6 +319,21 @@ static RzAnnotatedCode *parse_json(RzStrBuf *sb) {
 	return code;
 }
 
+RZ_API void jsdec_init_config(RzCore *core) {
+	RzConfig *cfg = core->config;
+
+	rz_config_lock(cfg, false);
+	SETPREF("jsdec.asm", "false", "if true, shows pseudo next to the assembly.");
+	SETPREF("jsdec.blocks", "false", "if true, shows only scopes blocks.");
+	SETPREF("jsdec.casts", "false", "if false, hides all casts in the pseudo code.");
+	SETPREF("jsdec.debug", "false", "do not catch exceptions in jsdec.");
+	SETPREF("jsdec.highlight", "default", "highlights the current address.");
+	SETPREF("jsdec.paddr", "false", "if true, all xrefs uses physical addresses compare.");
+	SETPREF("jsdec.slow", "false", "load all the data before to avoid multirequests to rizin.");
+	SETPREF("jsdec.xrefs", "false", "if true, shows all xrefs in the pseudo code.");
+	rz_config_lock(cfg, true);
+}
+
 RZ_API RzAnnotatedCode *jsdec_as_annotation(RzCore *core, ut64 addr) {
 	ExecContext ectx;
 	ectx.core = core;

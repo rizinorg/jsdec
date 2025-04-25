@@ -10,6 +10,7 @@ extern "C" {
 
 #include <rz_util/rz_annotated_code.h>
 
+RZ_API void jsdec_init_config(RzCore *core);
 RZ_API RzAnnotatedCode *jsdec_as_annotation(RzCore *core, ut64 addr);
 
 #ifdef __cplusplus
