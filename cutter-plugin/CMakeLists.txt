@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(cutter-jsdec-plugin)
 
+set(CMAKE_CXX_STANDARD 20)
+
 set(CUTTER_INSTALL_PLUGDIR "share/rizin/cutter/plugins/native" CACHE STRING "Directory to install Cutter plugin into")
 set(JSDEC_BUILD_DIR "../build" CACHE STRING "Directory where to find libjsdec.a")
 
