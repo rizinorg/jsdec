@@ -1,6 +1,6 @@
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-![jsdec](https://raw.githubusercontent.com/rizinorg/jsdec/master/.github/logo.png)
+![jsdec](https://raw.githubusercontent.com/rizinorg/jsdec/dev/.github/logo.png)
 
 Converts asm to pseudo-C code.
 
@@ -87,5 +87,5 @@ e scr.color         | enables syntax colors.
 
 # Developing on jsdec
 
-[Read DEVELOPERS.md](https://github.com/rizinorg/jsdec/blob/master/DEVELOPERS.md)
+[Read DEVELOPERS.md](https://github.com/rizinorg/jsdec/blob/dev/DEVELOPERS.md)
 
