@@ -6,7 +6,7 @@ CI_JSDEC="$PWD"
 CI_RZ_VERSION=$2
 
 if [ "$CI_BRANCH" != "dev" ]; then
-	# master branch always build against latest release of rizin
+	# stable branch always build against latest release of rizin
 	CI_RZ_VERSION=$(curl -s GET https://api.github.com/repos/rizinorg/rizin/tags\?per_page\=1 | jq -r '.[].name')
 else
 	CI_RZ_VERSION="$CI_BRANCH"
@@ -25,7 +25,7 @@ if [ "$CI_BRANCH" == "dev" ]; then
 	wget -O "rizin.tar.gz" "https://github.com/rizinorg/rizin/archive/refs/heads/dev.tar.gz"
 	tar xf "rizin.tar.gz"
 else
-	# master branch always build against latest release of rizin
+	# stable branch always build against latest release of rizin
 	wget -O "rizin.tar.xz" "https://github.com/rizinorg/rizin/releases/download/$CI_RZ_VERSION/rizin-src-$CI_RZ_VERSION.tar.xz"
 	tar xf "rizin.tar.xz"
 fi

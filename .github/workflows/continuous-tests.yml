@@ -2,7 +2,7 @@ name: continuous-tests
 on:
   push:
     branches:
-      - master
+      - stable
       - dev
   pull_request:
 

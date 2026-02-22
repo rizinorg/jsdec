@@ -5,10 +5,10 @@ import os
 
 out_file = "rizin.zip"
 
-latest = "master" if len(sys.argv) < 1 else sys.argv[1]
+latest = "stable" if len(sys.argv) < 1 else sys.argv[1]
 
 if latest != "dev":
-    # master branch always build against latest release of rizin
+    # stable branch always build against latest release of rizin
     tags = None
     with urllib.request.urlopen('https://api.github.com/repos/rizinorg/rizin/tags?per_page=1') as f:
         tags = json.load(f)
