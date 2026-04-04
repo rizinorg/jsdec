@@ -22,8 +22,8 @@ typedef struct exec_context_t {
 	JSValue shared;
 } ExecContext;
 
-static JSValue js_analysis_bytes(JSContext *ctx, RzCore *core, RzAnalysisBytes *ab) {
-	RzAnalysisOp *aop = ab->op;
+static JSValue js_analysis_bytes(JSContext *ctx, RzCore *core, RzCoreDecodedBytes *cdb) {
+	RzAnalysisOp *aop = &cdb->an_op;
 	JSValue op = JS_NewObject(ctx);
 	JS_SetPropertyStr(ctx, op, "offset", JS_NewBigUint64(ctx, aop->addr));
 	if (aop->ptr != UT64_MAX) {
@@ -32,8 +32,8 @@ static JSValue js_analysis_bytes(JSContext *ctx, RzCore *core, RzAnalysisBytes *
 	if (aop->val != UT64_MAX) {
 		JS_SetPropertyStr(ctx, op, "val", JS_NewBigUint64(ctx, aop->val));
 	}
-	JS_SetPropertyStr(ctx, op, "opcode", JS_NewString(ctx, rz_str_get_null(ab->opcode)));
-	JS_SetPropertyStr(ctx, op, "disasm", JS_NewString(ctx, rz_str_get_null(ab->disasm)));
+	JS_SetPropertyStr(ctx, op, "opcode", JS_NewString(ctx, rz_str_get_null(cdb->opcode)));
+	JS_SetPropertyStr(ctx, op, "disasm", JS_NewString(ctx, rz_str_get_null(cdb->disasm)));
 	JS_SetPropertyStr(ctx, op, "type", JS_NewString(ctx, rz_analysis_optype_to_string(aop->type)));
 	if (aop->jump != UT64_MAX) {
 		JS_SetPropertyStr(ctx, op, "jump", JS_NewBigInt64(ctx, aop->jump));
@@ -49,7 +49,7 @@ static JSValue js_analysis_bytes(JSContext *ctx, RzCore *core, RzAnalysisBytes *
 }
 
 static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
-	RzAnalysisBytes *ab;
+	RzCoreDecodedBytes *cdb;
 	JSValue ops = JS_NewArray(ctx);
 	st64 op_idx = 0;
 
@@ -57,11 +57,11 @@ static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 	if (!iter) {
 		return ops;
 	}
-	rz_iterator_foreach(iter, ab) {
-		if (!ab || !ab->op || !strcmp(ab->opcode, "nop")) {
+	rz_iterator_foreach(iter, cdb) {
+		if (!cdb || !strcmp(cdb->opcode, "nop")) {
 			continue;
 		}
-		JSValue op = js_analysis_bytes(ctx, core, ab);
+		JSValue op = js_analysis_bytes(ctx, core, cdb);
 		JS_SetPropertyInt64(ctx, ops, op_idx, op);
 		op_idx++;
 	}
