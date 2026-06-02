@@ -280,7 +280,8 @@ command_handler(pddi, "--issue");
 command_handler(pddj, "--as-json");
 command_handler(pddo, "--offsets");
 
-static bool rz_cmd_pdd_init(RzCore *core) {
+static bool rz_cmd_pdd_init(RzCore *core, void **user) {
+	(void)user;
 	RzCmd *rcmd = core->rcmd;
 	RzConfig *cfg = core->config;
 	RzCmdDesc *root_cd = rz_cmd_get_desc(rcmd, "pd");
@@ -319,7 +320,8 @@ static bool rz_cmd_pdd_init(RzCore *core) {
 	return true;
 }
 
-static bool rz_cmd_pdd_fini(RzCore *core) {
+static bool rz_cmd_pdd_fini(RzCore *core, void *user) {
+	(void)user;
 	RzCmd *rcmd = core->rcmd;
 	RzCmdDesc *cd = rz_cmd_get_desc(rcmd, "pdd");
 	return rz_cmd_desc_remove(rcmd, cd);
