@@ -447,7 +447,7 @@ void help(void)
 
 int main(int argc, char **argv)
 {
-    int c, i, verbose;
+    int c, i;
     const char *out_filename, *cname, *script_name;
     char cfilename[1024];
     FILE *fo;
@@ -462,7 +462,6 @@ int main(int argc, char **argv)
     output_type = OUTPUT_C;
     cname = NULL;
     module = -1;
-    verbose = 0;
     strip = 0;
     stack_size = 0;
     memset(&dynamic_module_list, 0, sizeof(dynamic_module_list));
@@ -518,9 +517,6 @@ int main(int argc, char **argv)
             break;
         case 's':
             strip++;
-            break;
-        case 'v':
-            verbose++;
             break;
         case 'p':
             c_ident_prefix = optarg;
