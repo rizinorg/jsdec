@@ -9,11 +9,15 @@ import ColorsInvalid from './colors/invalid.js';
 
 function initializeColors() {
     const config = {};
-    const colors = rizin ? rizin.command("ec*") : '';
-    colors.split('\n').forEach(function(line) {
-        const tok = line.split(' ');
-        config[tok[1]] = tok[2];
-    });
+    if (rizin) {
+        const raw = rizin.command("ecj");
+        const colors = JSON.parse(raw || "{}");
+        if (colors && typeof colors === 'object' && !Array.isArray(colors)) {
+            Object.keys(colors).forEach(function(key) {
+                config[key] = colors[key];
+            });
+        }
+    }
     return {
         "callname": config['call'] || 'gray',
         "integers": config['num'] || 'cyan',

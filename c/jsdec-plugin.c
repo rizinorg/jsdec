@@ -11,6 +11,7 @@
 #include <rz_analysis.h>
 
 #include "jsdec.h"
+#include "rz_util/rz_iterator.h"
 
 typedef struct rz_core_t RzCore;
 
@@ -80,11 +81,11 @@ static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 	JSValue ops = JS_NewArray(ctx);
 	st64 op_idx = 0;
 
-	RzIterator *iter = rz_core_analysis_bytes(core, core->offset, core->block, core->blocksize, 0);
-	if (!iter) {
+	RzIterator iter = (RzIterator){ 0 };
+	if (!rz_core_analysis_bytes(core, core->offset, core->block, core->blocksize, 0, &iter)) {
 		return ops;
 	}
-	rz_iterator_foreach (iter, cdb) {
+	rz_iterator_foreach(&iter, cdb) {
 		if (!cdb || !strcmp(cdb->opcode, "nop")) {
 			continue;
 		}
@@ -92,7 +93,7 @@ static JSValue js_analysis_opcodes(JSContext *ctx, RzCore *core) {
 		JS_SetPropertyInt64(ctx, ops, op_idx, op);
 		op_idx++;
 	}
-	rz_iterator_free(iter);
+	rz_iterator_fini(&iter);
 	return ops;
 }
 
@@ -138,14 +139,14 @@ static JSValue js_command(JSContext *ctx, JSValueConst jsThis, int argc, JSValue
 
 	ExecContext *ectx = (ExecContext *)JS_GetContextOpaque(ctx);
 	RzCore *core = ectx->core;
-	rz_cons_sleep_end(ectx->bed);
+	rz_interrupt_sleep_end(core->intr, ectx->bed);
 
 	char *output = rz_core_cmd_str(core, command);
 	JS_FreeCString(ctx, command);
 	JSValue result = JS_NewString(ctx, output ? output : "");
 	free(output);
 
-	ectx->bed = rz_cons_sleep_begin();
+	ectx->bed = rz_interrupt_sleep_begin(core->intr);
 	return result;
 }
 
@@ -155,11 +156,11 @@ static JSValue js_graph(JSContext *ctx, JSValueConst jsThis, int argc, JSValueCo
 	}
 	ExecContext *ectx = (ExecContext *)JS_GetContextOpaque(ctx);
 	RzCore *core = ectx->core;
-	rz_cons_sleep_end(ectx->bed);
+	rz_interrupt_sleep_end(core->intr, ectx->bed);
 
 	RzAnalysisFunction *fcn = rz_analysis_get_fcn_in(core->analysis, core->offset, -1);
 	if (!fcn) {
-		ectx->bed = rz_cons_sleep_begin();
+		ectx->bed = rz_interrupt_sleep_begin(core->intr);
 		return JS_ThrowInternalError(ctx, "Cannot find function at 0x%08" PFMT64x, core->offset);
 	}
 
@@ -169,24 +170,29 @@ static JSValue js_graph(JSContext *ctx, JSValueConst jsThis, int argc, JSValueCo
 	JS_SetPropertyStr(ctx, object, "name", JS_NewString(ctx, rz_str_get_null(fcn->name)));
 	JSValue blocks = js_function_bbs(ctx, core, fcn);
 	JS_SetPropertyStr(ctx, object, "blocks", blocks);
-	ectx->bed = rz_cons_sleep_begin();
+	ectx->bed = rz_interrupt_sleep_begin(core->intr);
 	return graph;
 }
 
 static JSValue js_console_log(JSContext *ctx, JSValueConst jsThis, int argc, JSValueConst *argv) {
+	ExecContext *ectx = (ExecContext *)JS_GetContextOpaque(ctx);
+	if (!ectx || !ectx->core) {
+		return JS_EXCEPTION;
+	}
+	RzCons *cons = ectx->core->cons;
 	for (int i = 0; i < argc; ++i) {
 		if (i != 0) {
-			rz_cons_print(" ");
+			rz_cons_print(cons, " ");
 		}
 		const char *str = JS_ToCString(ctx, argv[i]);
 		if (!str) {
 			return JS_EXCEPTION;
 		}
-		rz_cons_print(str);
+		rz_cons_print(cons, str);
 		JS_FreeCString(ctx, str);
 	}
-	rz_cons_newline();
-	rz_cons_flush();
+	rz_cons_newline(cons);
+	rz_cons_flush(cons);
 	return JS_UNDEFINED;
 }
 
@@ -245,9 +251,9 @@ static bool jsdec_main(RzCore *core, const char *arg) {
 		return false;
 	}
 
-	ectx.bed = rz_cons_sleep_begin();
+	ectx.bed = rz_interrupt_sleep_begin(core->intr);
 	bool ret = jsdec_run(dec);
-	rz_cons_sleep_end(ectx.bed);
+	rz_interrupt_sleep_end(core->intr, ectx.bed);
 
 	jsdec_destroy(dec, &ectx);
 	return ret;
