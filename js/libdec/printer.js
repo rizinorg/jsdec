@@ -11,12 +11,10 @@ function initializeColors() {
     const config = {};
     if (rizin) {
         const raw = rizin.command("ecj");
-        const colors = JSON.parse(raw || "[]");
-        if (Array.isArray(colors)) {
-            colors.forEach(function(c) {
-                if (c && c.name && c.color) {
-                    config[c.name] = c.color;
-                }
+        const colors = JSON.parse(raw || "{}");
+        if (colors && typeof colors === 'object' && !Array.isArray(colors)) {
+            Object.keys(colors).forEach(function(key) {
+                config[key] = colors[key];
             });
         }
     }
