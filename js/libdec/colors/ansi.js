@@ -13,13 +13,13 @@ var __colors = {
 	gray: [90, 39],
 };
 
-function pair(name, n) {
-	if (name.length === 6) {
-		n *= 2;
-		return parseInt(name.substring(n, n + 2), 16);
+function rgbnum(rgb, n) {
+	if (n > rgb.length) {
+		return '0';
 	}
-	return (parseInt(name.substring(n, n + 1), 16) << 4) >>> 0;
+	return rgb[n].toString();
 }
+
 var Color = function(name) {
 	var fn = (function(){
 		var that = function(x) {
@@ -27,9 +27,9 @@ var Color = function(name) {
 		};
 		return that;
 	})();
-	if (name.startsWith('rgb:')) {
-		name = name.substring(4);
-		const str = '38;2;' + pair(name, 0) + ';' + pair(name, 1) + ';' + pair(name, 2);
+	if (name['rgb']) {
+		var rgb = name['rgb'];
+		const str = '38;2;' + rgbnum(rgb, 0) + ';' + rgbnum(rgb, 1) + ';' + rgbnum(rgb, 2);
 		fn.open = '\u001b[' + str + 'm';
 		fn.close = '\u001b[39m';
 	} else {
@@ -41,6 +41,7 @@ var Color = function(name) {
 	}
 	return fn;
 };
+
 Color.make = function(theme) {
 	var g = {};
 	for (var key in theme) {
